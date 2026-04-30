@@ -83,3 +83,35 @@ export const validateInput = ({
     cleanConfirmPassword,
   };
 };
+
+export const normalizeDate = (value: string): string | undefined => {
+  if (!value) return undefined;
+
+  const parsed = new Date(value);
+
+  if (isNaN(parsed.getTime())) return undefined;
+
+  return parsed.toISOString();
+};
+
+export const formatDate = (iso?: string | null): string => {
+  if (!iso) return "-";
+
+  const date = new Date(iso);
+
+  if (isNaN(date.getTime())) return "-";
+
+  const today = new Date();
+  const isToday =
+    date.getFullYear() === today.getFullYear() &&
+    date.getMonth() === today.getMonth() &&
+    date.getDate() === today.getDate();
+
+  if (isToday) return "Today";
+
+  const day = String(date.getDate()).padStart(2, "0");
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const year = date.getFullYear();
+
+  return `${day}/${month}/${year}`;
+};

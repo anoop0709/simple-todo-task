@@ -1,4 +1,3 @@
-// hooks/useAuth.ts
 import { useMutation, useQuery } from "@apollo/client/react";
 import { gql } from "@apollo/client";
 import { LOGIN } from "../graphql/mutations";
@@ -25,10 +24,13 @@ type MeQuery = {
 
 export function useAuth() {
   const [login] = useMutation(LOGIN);
-  const { data, loading, refetch } = useQuery<MeQuery>(ME);
+  const { data, loading, refetch } = useQuery<MeQuery>(ME, {
+    errorPolicy: "all",
+    fetchPolicy: "network-only",
+  });
 
   return {
-    user: data?.me,
+    user: data?.me ?? null,
     loading,
     login,
     refetch,

@@ -38,7 +38,11 @@ export async function createContext({ req, res }: { req: Request; res: Response 
         res.cookie("token", token, { sameSite: "lax", httpOnly: true, expires: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000) });
       },
       logout: () => {
-        res.clearCookie("token");
+        res.clearCookie("token", {
+          sameSite: "lax",
+          httpOnly: true,
+          path: "/",
+        });
       }
     }
   }

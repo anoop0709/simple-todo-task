@@ -85,7 +85,7 @@ export default function Login() {
 
     return (
         <Box
-       sx={{
+            sx={{
                 minHeight: '100vh',
                 display: 'flex',
                 flexDirection: { xs: 'column', md: 'row' },
@@ -96,7 +96,7 @@ export default function Login() {
             }}
         >
             <Box
-           sx={{
+                sx={{
                     width: { xs: '100%', sm: '420px', md: '500px' },
                     padding: { xs: '24px', md: '40px' },
                     borderRadius: '8px',
@@ -252,7 +252,7 @@ export default function Login() {
                 component="img"
                 src="src/assets/todo_list.png"
                 alt="login"
-                 sx={{
+                sx={{
                     display: { xs: 'none', md: 'block' },
                     width: '20%',
                 }}
