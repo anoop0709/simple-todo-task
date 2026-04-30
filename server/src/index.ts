@@ -14,7 +14,6 @@ const app = express() as any;
 
 
 
-// Set up Apollo Server
 const server = new ApolloServer({
   schema,
 });
@@ -25,7 +24,7 @@ async function startServer() {
   app.use(
     '/graphql',
     cors<cors.CorsRequest>({
-      origin: 'http://localhost:3000',
+      origin: 'http://localhost:5173',
       credentials: true,
     }),
     cookieParser(),
@@ -37,7 +36,7 @@ async function startServer() {
 }
 
 app.listen(port, () => {
-  console.log(`🚀 Server ready at http://localhost:${port}/graphql`);
+  console.log(`Server ready at http://localhost:${port}/graphql`);
 });
 
 startServer().catch((error) => {
