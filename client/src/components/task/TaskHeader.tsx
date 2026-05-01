@@ -8,19 +8,21 @@ import {
 import SearchIcon from '@mui/icons-material/Search';
 import LogoutIcon from '@mui/icons-material/Logout';
 import { useMutation } from '@apollo/client/react';
-import { LOGOUT } from '../graphql/mutations';
+import { LOGOUT } from '../../graphql/mutations';
 import { useNavigate } from 'react-router-dom';
 import { useApolloClient } from '@apollo/client/react';
 import { useState } from 'react';
-import type { Task } from '../types';
-import { useTasks } from '../hooks/useTask';
-import { GET_TASKS } from '../graphql/queries';
-import AddTaskModal from './AddTaskModal';
+import type { Task } from '../../types';
+import { useTasks } from '../../hooks/useTask';
+import { GET_TASKS } from '../../graphql/queries';
+import AddTaskModal from '../modals/AddTaskModal';
+import { useSnackbar } from '../../hooks/useSnackBar';
 
 export default function TaskHeader() {
     const { createTask } = useTasks();
     const [logout] = useMutation(LOGOUT);
     const navigate = useNavigate();
+    const { showSnackbar } = useSnackbar();
     const [openTaskModal, setOpenTaskModal] = useState(false);
 
     const client = useApolloClient();
@@ -31,39 +33,47 @@ export default function TaskHeader() {
         try {
             e.preventDefault();
             await logout();
+            showSnackbar('User logout successfull', 'success');
             await client.resetStore();
             navigate('/login');
         } catch (err) {
             console.log('Expected logout error:', err);
+            showSnackbar('Something went wrong, please try again', 'error');
         }
     };
 
     const handleAddTask = async (task: Task) => {
-        await createTask({
-            variables: {
-                input: {
-                    name: task.name,
-                    dueDate: task.dueDate ?? null,
-                    tag: task.tag ?? null,
-                    note: task.note ?? null,
-                },
-            },
-
-            update(cache, { data }) {
-                const existing = cache.readQuery<{ tasks: Task[] }>({
-                    query: GET_TASKS,
-                });
-
-                if (!existing || !data?.createTask) return;
-
-                cache.writeQuery({
-                    query: GET_TASKS,
-                    data: {
-                        tasks: [data.createTask, ...existing.tasks],
+        try {
+            await createTask({
+                variables: {
+                    input: {
+                        name: task.name,
+                        dueDate: task.dueDate ?? null,
+                        tag: task.tag ?? null,
+                        note: task.note ?? null,
                     },
-                });
-            },
-        });
+                },
+
+                update(cache, { data }) {
+                    const existing = cache.readQuery<{ tasks: Task[] }>({
+                        query: GET_TASKS,
+                    });
+
+                    if (!existing || !data?.createTask) return;
+
+                    cache.writeQuery({
+                        query: GET_TASKS,
+                        data: {
+                            tasks: [data.createTask, ...existing.tasks],
+                        },
+                    });
+                },
+            });
+            showSnackbar('New Task created congratulations!', 'success');
+        } catch (error) {
+            console.log(error);
+            showSnackbar('Something went wrong, please try again', 'error');
+        }
     };
 
     return (
@@ -71,7 +81,7 @@ export default function TaskHeader() {
             <Box
                 sx={{
                     width: '100%',
-                    padding: '24px 32px',
+                    padding: { xs: '0px 0px', md: '24px 32px' },
                     display: 'flex',
                     justifyContent: 'space-between',
                     alignItems: 'center',
@@ -82,7 +92,7 @@ export default function TaskHeader() {
                     variant="h3"
                     sx={{
                         color: '#000000',
-                        fontSize: { xs: '20px', md: '32px' },
+                        fontSize: { xs: '24px', md: '32px' },
                         fontWeight: 900,
                     }}
                 >
@@ -100,6 +110,11 @@ export default function TaskHeader() {
                         placeholder="Search"
                         size="small"
                         sx={{
+                            display: {
+                                xs: 'none',
+                                sm: 'none',
+                                md: 'inline-flex',
+                            },
                             backgroundColor: '#fff',
                             borderRadius: '5px',
                             width: { xs: '140px', md: '220px' },
@@ -120,6 +135,11 @@ export default function TaskHeader() {
                         variant="outlined"
                         startIcon={<LogoutIcon />}
                         sx={{
+                            display: {
+                                xs: 'none',
+                                sm: 'none',
+                                md: 'inline-flex',
+                            },
                             color: '#000000',
                             borderColor: '#000000',
                             textTransform: 'none',
@@ -137,7 +157,7 @@ export default function TaskHeader() {
             <Box
                 sx={{
                     width: '100%',
-                    padding: '24px 32px',
+                    padding: { xs: '20px 0px', md: '24px 32px' },
                     display: 'flex',
                     justifyContent: 'space-between',
                     alignItems: 'center',
@@ -153,6 +173,8 @@ export default function TaskHeader() {
                         textTransform: 'none',
                         fontWeight: 600,
                         boxShadow: 'none',
+                        color: '#efefef',
+                        padding: { xs: '4px 25px' },
                     }}
                 >
                     + Add task

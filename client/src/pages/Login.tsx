@@ -12,9 +12,11 @@ import {
 import { Visibility, VisibilityOff } from '@mui/icons-material';
 import { Link } from 'react-router-dom';
 import { validateInput } from '../utils/helper';
+import { useSnackbar } from '../hooks/useSnackBar';
 
 export default function Login() {
     const { login, refetch } = useAuth();
+    const { showSnackbar } = useSnackbar();
 
     const [showPassword, setShowPassword] = useState<boolean>(false);
     const [checked, setChecked] = useState<boolean>(false);
@@ -58,23 +60,29 @@ export default function Login() {
     };
 
     const handleLogin = async () => {
-        const { isValid, cleanEmail, errors, cleanPassword } = validateInput({
-            email,
-            password,
-        });
+        try {
+            const { isValid, cleanEmail, errors, cleanPassword } =
+                validateInput({
+                    email,
+                    password,
+                });
 
-        setErrors(errors);
+            setErrors(errors);
 
-        if (!isValid) return;
+            if (!isValid) return;
 
-        await login({
-            variables: {
-                email: cleanEmail,
-                password: cleanPassword,
-            },
-        });
-
-        await refetch();
+            await login({
+                variables: {
+                    email: cleanEmail,
+                    password: cleanPassword,
+                },
+            });
+            showSnackbar('user login successfull', 'success');
+            await refetch();
+        } catch (error) {
+            console.log(error);
+            showSnackbar('Something went wrong, please try again', 'error');
+        }
     };
 
     const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -97,7 +105,7 @@ export default function Login() {
         >
             <Box
                 sx={{
-                    width: { xs: '100%', sm: '420px', md: '500px' },
+                    width: { xs: '100%', sm: '420px', md: '450px' },
                     padding: { xs: '24px', md: '40px' },
                     borderRadius: '8px',
                     border: { xs: 'none', md: '0.2px solid #878787' },
@@ -254,7 +262,8 @@ export default function Login() {
                 alt="login"
                 sx={{
                     display: { xs: 'none', md: 'block' },
-                    width: '20%',
+                    width: '25%',
+                    height: '25%',
                 }}
             />
         </Box>

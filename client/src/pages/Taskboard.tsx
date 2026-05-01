@@ -1,22 +1,16 @@
-import {
-    Box,
-    Table,
-    TableBody,
-    TableContainer,
-    TableHead,
-    Typography,
-} from '@mui/material';
-import TaskHeader from '../components/TaskHeader';
+import { Box } from '@mui/material';
+import TaskHeader from '../components/task/TaskHeader';
 import { useTasks } from '../hooks/useTask';
-import TaskRow from '../components/TaskRow';
-import TaskRowHeader from '../components/TaskRowHeader';
-import Paper from '@mui/material/Paper';
-import { ExpandMoreOutlined as ExpandMoreIcon } from '@mui/icons-material';
 import { useState } from 'react';
+import { useTheme, useMediaQuery } from '@mui/material';
+import { Tasks } from '../components/task/Tasks';
+import { TasksMobileVersion } from '../components/task/TasksMobileVersion';
 
 export default function Taskboard() {
-    const [taskToDoExpanded, setTaskToDoExpanded] = useState(true);
-    const [taskDoneExpanded, setDoneExpanded] = useState(false);
+    const theme = useTheme();
+    const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
+    const [isTaskToDoExpanded, setIsTaskToDoExpanded] = useState(true);
+    const [isTaskDoneExpanded, setIsTaskDoneExpanded] = useState(false);
     const { tasks } = useTasks();
     const [taskTodo, taskDone] = tasks.reduce<[typeof tasks, typeof tasks]>(
         (acc, task) => {
@@ -38,118 +32,37 @@ export default function Taskboard() {
             }}
         >
             <TaskHeader />
-            {taskTodo?.length ? (
+            {isMobile ? (
                 <>
-                    <Box
-                        sx={{
-                            width: '96%',
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'flex-start',
-                            margin: '0 auto',
-                            marginBottom: '20px',
-                            marginTop: '50px',
-                        }}
-                    >
-                        <Typography
-                            variant="h6"
-                            sx={{ fontWeight: 600 }}
-                        >
-                            Task to do
-                        </Typography>
-                        <ExpandMoreIcon
-                            onClick={() => setTaskToDoExpanded((prev) => !prev)}
-                            sx={{
-                                transition: 'transform 0.3s ease',
-                                transform: taskToDoExpanded
-                                    ? 'rotate(0deg)'
-                                    : 'rotate(180deg)',
-                            }}
-                        />
-                    </Box>
-                    {taskToDoExpanded && (
-                        <TableContainer
-                            component={Paper}
-                            sx={{
-                                width: '96%',
-                                margin: '0 auto',
-                                boxShadow: '0.1px 0.1px 0.1px 1px #e8e8e8',
-                            }}
-                        >
-                            <Table sx={{ width: '100%' }}>
-                                <TableHead>
-                                    <TaskRowHeader />
-                                </TableHead>
-
-                                <TableBody>
-                                    {taskTodo.map((task) => (
-                                        <TaskRow
-                                            key={task.id}
-                                            task={task}
-                                        />
-                                    ))}
-                                </TableBody>
-                            </Table>
-                        </TableContainer>
-                    )}
+                    <TasksMobileVersion
+                        tasks={taskTodo}
+                        expandTasks={isTaskToDoExpanded}
+                        setExpandTask={setIsTaskToDoExpanded}
+                        isTodo={true}
+                    />
+                    <TasksMobileVersion
+                        tasks={taskDone}
+                        expandTasks={isTaskDoneExpanded}
+                        setExpandTask={setIsTaskDoneExpanded}
+                        isTodo={false}
+                    />
                 </>
-            ) : null}
-            {taskDone?.length ? (
+            ) : (
                 <>
-                    <Box
-                        sx={{
-                            width: '96%',
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'flex-start',
-                            margin: '0 auto',
-                            marginBottom: '20px',
-                            marginTop: '50px',
-                        }}
-                    >
-                        <Typography
-                            variant="h6"
-                            sx={{ fontWeight: 600 }}
-                        >
-                            Task done
-                        </Typography>
-                        <ExpandMoreIcon
-                            onClick={() => setDoneExpanded((prev) => !prev)}
-                            sx={{
-                                transition: 'transform 0.3s ease',
-                                transform: taskDoneExpanded
-                                    ? 'rotate(0deg)'
-                                    : 'rotate(180deg)',
-                            }}
-                        />
-                    </Box>
-                    {taskDoneExpanded && (
-                        <TableContainer
-                            component={Paper}
-                            sx={{
-                                width: '96%',
-                                margin: '0 auto',
-                                boxShadow: '0.1px 0.1px 0.1px 1px #e8e8e8',
-                            }}
-                        >
-                            <Table sx={{ width: '100%' }}>
-                                <TableHead>
-                                    <TaskRowHeader />
-                                </TableHead>
-
-                                <TableBody>
-                                    {taskDone.map((task) => (
-                                        <TaskRow
-                                            key={task.id}
-                                            task={task}
-                                        />
-                                    ))}
-                                </TableBody>
-                            </Table>
-                        </TableContainer>
-                    )}
+                    <Tasks
+                        tasks={taskTodo}
+                        expandTasks={isTaskToDoExpanded}
+                        setExpandTask={setIsTaskToDoExpanded}
+                        isTodo={true}
+                    />
+                    <Tasks
+                        tasks={taskDone}
+                        expandTasks={isTaskDoneExpanded}
+                        setExpandTask={setIsTaskDoneExpanded}
+                        isTodo={false}
+                    />
                 </>
-            ) : null}
+            )}
         </Box>
     );
 }

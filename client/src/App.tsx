@@ -6,6 +6,7 @@ import { Navigate, Route, Routes } from 'react-router-dom';
 import Register from './pages/Register';
 import Taskboard from './pages/Taskboard';
 import Header from './components/Appbar';
+import { SnackbarProvider } from './context/SnackbarProvider';
 
 export default function App() {
     const { user, loading } = useAuth();
@@ -26,26 +27,30 @@ export default function App() {
 
     return (
         <>
-            {user && <Header />}
-            <Routes>
-                {/* Public routes */}
-                <Route
-                    path="/login"
-                    element={!user ? <Login /> : <Navigate to="/" />}
-                />
-                <Route
-                    path="/register"
-                    element={!user ? <Register /> : <Navigate to="/" />}
-                />
-                <Route
-                    path="/"
-                    element={user ? <Taskboard /> : <Navigate to="/login" />}
-                />
-                <Route
-                    path="*"
-                    element={<Navigate to="/" />}
-                />
-            </Routes>
+            <Header />
+            <SnackbarProvider>
+                <Routes>
+                    {/* Public routes */}
+                    <Route
+                        path="/login"
+                        element={!user ? <Login /> : <Navigate to="/" />}
+                    />
+                    <Route
+                        path="/register"
+                        element={!user ? <Register /> : <Navigate to="/" />}
+                    />
+                    <Route
+                        path="/"
+                        element={
+                            user ? <Taskboard /> : <Navigate to="/login" />
+                        }
+                    />
+                    <Route
+                        path="*"
+                        element={<Navigate to="/" />}
+                    />
+                </Routes>
+            </SnackbarProvider>
         </>
     );
 }

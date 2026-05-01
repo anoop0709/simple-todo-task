@@ -7,9 +7,9 @@ import {
     MenuItem,
 } from '@mui/material';
 import { useState } from 'react';
-import { Tag } from '../types';
-import type { Task } from '../types';
-import { formatDate } from '../utils/helper';
+import { Tag } from '../../types';
+import type { Task } from '../../types';
+import { normalizeDate } from '../../utils/helper';
 
 const style = {
     position: 'absolute' as const,
@@ -23,34 +23,32 @@ const style = {
     p: 3,
 };
 
-export default function EditTaskModal({
+export default function AddTaskModal({
     open,
     onClose,
-    onEdit,
-    task,
+    onAdd,
 }: {
     open: boolean;
     onClose: () => void;
-    onEdit: (task: Task) => void;
-    task: Task;
+    onAdd: (task: Task) => void;
 }) {
-    const [name, setName] = useState(task.name);
-    const [dueDate, setDueDate] = useState(formatDate(task.dueDate));
-    const [tag, setTag] = useState<Tag | '' | undefined>(task?.tag);
+    const [name, setName] = useState('');
+    const [dueDate, setDueDate] = useState('');
+    const [tag, setTag] = useState<Tag | ''>('');
     const [note, setNote] = useState(null);
 
     const handleSubmit = () => {
         if (!name.trim()) return;
 
-        const editedTask: Task = {
+        const newTask: Task = {
             name,
-            dueDate: dueDate || undefined,
+            dueDate: normalizeDate(dueDate),
             tag: tag || undefined,
             note: note || null,
-            completed: task.completed,
+            completed: false,
         };
 
-        onEdit(editedTask);
+        onAdd(newTask);
 
         setName('');
         setDueDate('');
@@ -120,15 +118,16 @@ export default function EditTaskModal({
                 >
                     <Button
                         onClick={onClose}
-                        sx={{ color: 'red' }}
+                        sx={{ color: '#878787' }}
                     >
                         Cancel
                     </Button>
                     <Button
                         variant="contained"
+                        sx={{ color: '#efefef' }}
                         onClick={handleSubmit}
                     >
-                        Update Task
+                        Add Task
                     </Button>
                 </Box>
             </Box>

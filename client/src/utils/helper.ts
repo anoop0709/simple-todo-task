@@ -115,3 +115,34 @@ export const formatDate = (iso?: string | null): string => {
 
   return `${day}/${month}/${year}`;
 };
+
+export const toDateInputValue = (value?: string | null): string => {
+  if (!value) return "";
+
+  if (value === "Today") {
+    return new Date().toISOString().split("T")[0];
+  }
+
+  const date = new Date(value);
+
+  if (isNaN(date.getTime())) return "";
+
+  return date.toISOString().split("T")[0];
+};
+
+export function formatDueDateForMobile(dateString: string | Date): string {
+  const date = new Date(dateString);
+  const today = new Date();
+
+  const isToday =
+    date.getDate() === today.getDate() &&
+    date.getMonth() === today.getMonth() &&
+    date.getFullYear() === today.getFullYear();
+
+  const formatted = date.toLocaleDateString('en-GB', {
+    month: 'short',
+    day: 'numeric',
+  });
+
+  return isToday ? `Today ${formatted}` : formatted;
+}

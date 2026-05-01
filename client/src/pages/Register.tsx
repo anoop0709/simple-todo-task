@@ -14,9 +14,11 @@ import { Visibility, VisibilityOff } from '@mui/icons-material';
 import { Link } from 'react-router-dom';
 import { validateInput } from '../utils/helper';
 import { useAuth } from '../hooks/useAuth';
+import { useSnackbar } from '../hooks/useSnackBar';
 
 export default function Register() {
     const { refetch } = useAuth();
+    const { showSnackbar } = useSnackbar();
     const [register] = useMutation(REGISTER);
 
     const navigate = useNavigate();
@@ -87,10 +89,12 @@ export default function Register() {
                     userName: cleanName,
                 },
             });
+            showSnackbar('User registration successfull');
             await refetch();
             navigate('/');
         } catch (error) {
             console.error('Register error:', error);
+            showSnackbar('Something went wrong, please try again', 'error');
         }
     };
 
@@ -301,7 +305,8 @@ export default function Register() {
                 alt="register"
                 sx={{
                     display: { xs: 'none', md: 'block' },
-                    width: '20%',
+                    width: '25%',
+                    height: '25%',
                 }}
             />
         </Box>
