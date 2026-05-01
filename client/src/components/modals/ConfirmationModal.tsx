@@ -1,8 +1,6 @@
 import { Modal, Box, Typography, Button } from '@mui/material';
 import { style } from './ModalStyle';
 
-
-
 export default function ConfirmDeleteTaskModal({
     open,
     onClose,

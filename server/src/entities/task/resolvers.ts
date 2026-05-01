@@ -1,21 +1,17 @@
 import mongoose from "mongoose";
 import { Context } from "../../context";
-import { enrichTasksWithWeatherData } from "../../lib/weather";
+import { transformTasksWithWeatherData } from "../../lib/weather";
+import { mapError, NotFoundError } from "../../lib/error";
+import { ensureAuthenticated, parseToISOString } from "../../lib/helper";
+import { Task } from "../../types";
 
-function requireAuth(context: Context) {
-    if (!context.auth.user) {
-        throw new Error("Not authenticated");
-    }
-    return context.auth.user.id;
-}
 
 export const resolvers = {
     Query: {
         tasks: async (_: unknown, __: unknown, context: Context) => {
-            const userId = requireAuth(context);
+            const userId = ensureAuthenticated(context);
             const tasks = await context.models.Task.find({ userId }).sort({ createdAt: -1 });
-            const enriched = await enrichTasksWithWeatherData(tasks);
-            return enriched;
+            return await transformTasksWithWeatherData(tasks);
         },
     },
 
@@ -25,17 +21,17 @@ export const resolvers = {
             { input }: any,
             context: Context
         ) => {
-            const userId = requireAuth(context);
-
-            const task = await context.models.Task.create({
-                ...input,
-                dueDate: input?.dueDate
-                    ? new Date(input.dueDate).toISOString()
-                    : undefined,
-                userId: new mongoose.Types.ObjectId(userId),
-            });
-
-            return task;
+            try {
+                const userId = ensureAuthenticated(context);
+                const task = await context.models.Task.create({
+                    ...input,
+                    dueDate: parseToISOString(input?.dueDate),
+                    userId: new mongoose.Types.ObjectId(userId),
+                });
+                return task;
+            } catch (error) {
+                throw mapError(error)
+            }
         },
 
         toggleTask: async (
@@ -43,16 +39,18 @@ export const resolvers = {
             { id }: { id: string },
             context: Context
         ) => {
-            const userId = requireAuth(context);
+            try {
+                const userId = ensureAuthenticated(context);
+                const task = await context.models.Task.findOne({ _id: id, userId });
 
-            const task = await context.models.Task.findOne({ _id: id, userId });
+                if (!task) throw new NotFoundError("Task not found");
 
-            if (!task) throw new Error("Task not found");
-
-            task.completed = !task.completed;
-            await task.save();
-
-            return task;
+                task.completed = !task.completed;
+                await task.save();
+                return task;
+            } catch (error) {
+                throw mapError(error)
+            }
         },
 
         deleteTask: async (
@@ -60,35 +58,36 @@ export const resolvers = {
             { id }: { id: string },
             context: Context
         ) => {
-            const userId = requireAuth(context);
-
-            const res = await context.models.Task.deleteOne({ _id: id, userId });
-
-            return res.deletedCount === 1;
+            try {
+                const userId = ensureAuthenticated(context);
+                const response = await context.models.Task.deleteOne({ _id: id, userId });
+                return response.deletedCount === 1;
+            } catch (error) {
+                throw mapError(error)
+            }
         },
+
         updateTask: async (
             _: unknown,
             { id, input }: { id: string; input: any },
             context: Context
         ) => {
-            const userId = requireAuth(context);
+            try {
+                const userId = ensureAuthenticated(context);
+                const task = await context.models.Task.findOne({ _id: id, userId });
 
-            const task = await context.models.Task.findOne({ _id: id, userId });
+                if (!task) throw new NotFoundError("Task not found");
 
-            if (!task) throw new Error("Task not found");
+                if ("dueDate" in input) {
+                    input.dueDate = parseToISOString(input.dueDate);
+                }
 
-            if (input.dueDate) {
-                const parsed = new Date(input.dueDate);
-                input.dueDate = !isNaN(parsed.getTime())
-                    ? parsed.toISOString()
-                    : undefined;
+                Object.assign(task, input);
+                await task.save();
+                return task;
+            } catch (error) {
+                throw mapError(error)
             }
-
-            Object.assign(task, input);
-
-            await task.save();
-
-            return task;
         },
     },
 };

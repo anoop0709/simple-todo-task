@@ -17,7 +17,7 @@ import { Tag, type Task } from '../../types';
 import { formatDateToDisplay } from '../../utils/helper';
 import { useTasks } from '../../hooks/useTask';
 import { GET_TASKS } from '../../graphql/queries';
-import { useState } from 'react';
+import React, { useState } from 'react';
 import TaskModal from '../modals/TaskActionModal';
 import ConfirmDeleteTaskModal from '../modals/ConfirmationModal';
 import { useSnackbar } from '../../hooks/useSnackbar';
@@ -38,7 +38,7 @@ type Props = {
     handleDrop: (i: number) => void;
 };
 
-export default function TaskRow(props: Props) {
+function TaskRow(props: Props) {
     const { task, index, setDraggedIndex, handleDrop } = props;
     const { deleteTask, toggleTask, refetch, updateTask } = useTasks();
     const { showSnackbar } = useSnackbar();
@@ -220,3 +220,5 @@ export default function TaskRow(props: Props) {
         </>
     );
 }
+
+export default React.memo(TaskRow);

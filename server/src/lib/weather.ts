@@ -1,5 +1,5 @@
 import dotenv from "dotenv";
-import { LocationSearchResult, Task, WeatherInfo } from "../types";
+import { LocationSearchResult, WeatherInfo } from "../types";
 import nlp from "compromise";
 
 dotenv.config();
@@ -44,12 +44,10 @@ async function enrichTask(title: string) {
 }
 
 
-export async function enrichTasksWithWeatherData(tasks: any[]) {
+export async function transformTasksWithWeatherData(tasks: any[]) {
     return Promise.all(
         tasks.map(async (task) => {
-
             const weather = await enrichTask(task.name);
-
             return {
                 id: task._id.toString(),
                 name: task.name,

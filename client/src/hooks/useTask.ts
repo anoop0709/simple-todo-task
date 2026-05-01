@@ -12,7 +12,7 @@ import { useApolloClient } from "@apollo/client/react";
 
 export function useTasks() {
   const { data, loading, refetch } = useQuery<GetTasksQuery>(GET_TASKS, {
-    fetchPolicy: "network-only",
+    fetchPolicy: "cache-first",
   });
 
   const [createTask] = useMutation<
@@ -30,6 +30,7 @@ export function useTasks() {
 
 
   const client = useApolloClient();
+
   const reorderTasks = (
     sourceIndex: number,
     destinationIndex: number,

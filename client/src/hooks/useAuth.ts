@@ -1,5 +1,5 @@
 import { useMutation, useQuery } from "@apollo/client/react";
-import { LOGIN } from "../graphql/mutations";
+import { LOGIN, LOGOUT } from "../graphql/mutations";
 import { ME } from "../graphql/queries";
 
 
@@ -16,6 +16,7 @@ type MeQuery = {
 
 export function useAuth() {
   const [login] = useMutation(LOGIN);
+  const [logout] = useMutation(LOGOUT)
   const { data, loading, refetch } = useQuery<MeQuery>(ME, {
     errorPolicy: "all",
     fetchPolicy: "network-only",
@@ -25,6 +26,7 @@ export function useAuth() {
     user: data?.me ?? null,
     loading,
     login,
+    logout,
     refetch,
   };
 }

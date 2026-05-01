@@ -1,13 +1,6 @@
-import { AuthError, ValidationError } from '../../lib/error';
+import { mapError, ValidationError } from '../../lib/error';
 import { Context } from '../../context';
-
-
-function ensureAuthenticated(context: Context) {
-  if (!context.auth.user) {
-    throw new AuthError('You must be logged in to perform this action.');
-  }
-  return context.auth.user.id;
-}
+import { ensureAuthenticated } from '../../lib/helper';
 
 export const resolvers = {
   Query: {
@@ -17,49 +10,62 @@ export const resolvers = {
       if (!user) {
         return null;
       }
-      return { id: user.id, email: user.email, userName: user.name };
+      const { id, email, name } = user
+      return { id, email, userName: name };
     },
   },
   Mutation: {
     register: async (_: unknown, args: { email: string; password: string; userName: string }, context: Context) => {
-      const existing = await context.models.User.findOne({ email: args.email });
-      if (existing) throw new ValidationError("Email already registered");
+      try {
+        const existing = await context.models.User.findOne({ email: args.email });
+        if (existing) throw new ValidationError("Email already registered");
 
-      const user = await context.models.User.create({
-        email: args.email,
-        password: args.password,
-        name: args.userName,
-      });
+        const user = await context.models.User.create({
+          email: args.email,
+          password: args.password,
+          name: args.userName,
+        });
 
-      context.auth.login({ id: user.id });
+        context.auth.login({ id: user.id });
+        const { id, email, name } = user;
 
-      return {
-        user: {
-          id: user.id,
-          email: user.email,
-          userName: user.name,
-        },
-      };
-    },
-    login: async (_: unknown, args: { email: string; password: string }, context: Context) => {
-      const user = await context.models.User
-        .findOne({ email: args.email })
-        .select("+password");
-
-      if (!user || !(await user.matchPassword(args.password))) {
-        throw new ValidationError("Invalid email or password");
+        return {
+          user: {
+            id,
+            email,
+            userName: name,
+          },
+        };
+      } catch (error) {
+        throw mapError(error)
       }
-
-      context.auth.login({ id: user.id });
-
-      return {
-        user: {
-          id: user.id,
-          email: user.email,
-          userName: user.name,
-        }
-      };
     },
+
+    login: async (_: unknown, args: { email: string; password: string }, context: Context) => {
+      try {
+        const user = await context.models.User
+          .findOne({ email: args.email })
+          .select("+password");
+
+        if (!user || !(await user.matchPassword(args.password))) {
+          throw new ValidationError("Invalid email or password");
+        }
+
+        context.auth.login({ id: user.id });
+        const { id, email, name } = user;
+
+        return {
+          user: {
+            id,
+            email,
+            userName: name,
+          },
+        };
+      } catch (error) {
+        throw mapError(error)
+      }
+    },
+
     logout: async (_: unknown, _args: unknown, context: Context) => {
       context.auth.logout();
       return true;

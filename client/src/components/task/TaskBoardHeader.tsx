@@ -7,8 +7,6 @@ import {
 } from '@mui/material';
 import SearchIcon from '@mui/icons-material/Search';
 import LogoutIcon from '@mui/icons-material/Logout';
-import { useMutation } from '@apollo/client/react';
-import { LOGOUT } from '../../graphql/mutations';
 import { useNavigate } from 'react-router-dom';
 import { useApolloClient } from '@apollo/client/react';
 import { useState } from 'react';
@@ -18,6 +16,7 @@ import { GET_TASKS } from '../../graphql/queries';
 import TaskModal from '../modals/TaskActionModal';
 import { useSnackbar } from '../../hooks/useSnackbar';
 import { handleError } from '../../services/errorHandler';
+import { useAuth } from '../../hooks/useAuth';
 
 export default function TaskHeader({
     search,
@@ -27,7 +26,7 @@ export default function TaskHeader({
     setSearch: (e: string) => void;
 }) {
     const { createTask } = useTasks();
-    const [logout] = useMutation(LOGOUT);
+    const {logout} = useAuth()
     const navigate = useNavigate();
     const { showSnackbar } = useSnackbar();
     const [openTaskModal, setOpenTaskModal] = useState(false);

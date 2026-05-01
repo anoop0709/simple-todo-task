@@ -11,29 +11,29 @@ import {
 import { Segment } from '@mui/icons-material';
 import { useState } from 'react';
 import { useAuth } from '../../hooks/useAuth';
-import { LOGOUT } from '../../graphql/mutations';
-import { useApolloClient, useMutation } from '@apollo/client/react';
+import { useApolloClient } from '@apollo/client/react';
 import { useNavigate } from 'react-router-dom';
 
 export default function Header() {
-    const { user } = useAuth();
+    const { user, logout } = useAuth();
     const isLoggedIn = !!user;
     const theme = useTheme();
     const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
     const isTab = useMediaQuery(theme.breakpoints.down('md'));
     const isShowMenuBar = isMobile || isTab;
-    const [logout] = useMutation(LOGOUT);
     const client = useApolloClient();
     const navigate = useNavigate();
-    const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
-    const open = Boolean(anchorEl);
+    const [anchorElement, setAnchorElement] = useState<null | HTMLElement>(
+        null,
+    );
+    const open = Boolean(anchorElement);
 
     const handleMenuOpen = (event: React.MouseEvent<HTMLElement>) => {
-        setAnchorEl(event.currentTarget);
+        setAnchorElement(event.currentTarget);
     };
 
     const handleClose = () => {
-        setAnchorEl(null);
+        setAnchorElement(null);
     };
 
     const handleLogout = async (
@@ -81,7 +81,7 @@ export default function Header() {
                         </IconButton>
 
                         <Menu
-                            anchorEl={anchorEl}
+                            anchorEl={anchorElement}
                             open={open}
                             onClose={handleClose}
                             anchorOrigin={{
@@ -92,7 +92,7 @@ export default function Header() {
                                 vertical: 'top',
                                 horizontal: 'right',
                             }}
-                            sx={{ padding: '0px 0px !important' }}
+                            sx={{ padding: '0px 30px !important' }}
                         >
                             <MenuItem
                                 onClick={(e) => handleLogout(e)}

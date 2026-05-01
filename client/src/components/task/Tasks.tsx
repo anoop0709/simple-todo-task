@@ -12,7 +12,7 @@ import { ExpandMoreOutlined as ExpandMoreIcon } from '@mui/icons-material';
 import TaskRow from '../task/TaskRow';
 import TaskRowHeader from '../task/TaskRowHeader';
 import { type Task } from '../../types';
-import { useState } from 'react';
+import { useCallback, useState } from 'react';
 
 type TasksProps = {
     tasks: Task[];
@@ -39,12 +39,18 @@ export const Tasks = ({
         setExpandTask((prev) => !prev);
     };
 
-    const handleDrop = (dropIndex: number) => {
-        if (draggedIndex === null) return;
+    const handleDrop = useCallback(
+        (dropIndex: number) => {
+            if (draggedIndex === null) return;
+            reorderTasks(draggedIndex, dropIndex, isTodo);
+            setDraggedIndex(null);
+        },
+        [draggedIndex, reorderTasks, isTodo],
+    );
 
-        reorderTasks(draggedIndex, dropIndex, isTodo);
-        setDraggedIndex(null);
-    };
+    const onDragStart = useCallback((index: number) => {
+        setDraggedIndex(index);
+    }, []);
 
     if (!tasks.length) return null;
 
@@ -100,7 +106,7 @@ export const Tasks = ({
                                           key={task.id}
                                           task={task}
                                           index={index}
-                                          setDraggedIndex={setDraggedIndex}
+                                          setDraggedIndex={onDragStart}
                                           handleDrop={handleDrop}
                                       />
                                   ))

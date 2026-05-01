@@ -1,3 +1,5 @@
+import { GraphQLError } from "graphql";
+
 export class AuthError extends Error {
   constructor(message = 'Authentication required') {
     super(message);
@@ -17,4 +19,29 @@ export class NotFoundError extends Error {
     super(message);
     this.name = 'NotFoundError';
   }
+}
+
+
+export function mapError(err: unknown) {
+  if (err instanceof AuthError) {
+    return new GraphQLError(err.message, {
+      extensions: { code: "UNAUTHENTICATED" },
+    });
+  }
+
+  if (err instanceof NotFoundError) {
+    return new GraphQLError(err.message, {
+      extensions: { code: "NOT_FOUND" },
+    });
+  }
+
+  if (err instanceof ValidationError) {
+    return new GraphQLError(err.message, {
+      extensions: { code: "BAD_USER_INPUT" },
+    });
+  }
+
+  return new GraphQLError("Internal server error", {
+    extensions: { code: "INTERNAL_SERVER_ERROR" },
+  });
 }

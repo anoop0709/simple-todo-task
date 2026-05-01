@@ -129,7 +129,7 @@ export default function TaskModal({
                         sx={{ color: '#efefef' }}
                         onClick={handleSubmit}
                     >
-                       {task.name !== '' ? 'Update Task' : 'Add Task'}
+                        {task.name !== '' ? 'Update Task' : 'Add Task'}
                     </Button>
                 </Box>
             </Box>

@@ -24,6 +24,7 @@ export const typeDefs = `#graphql
     dueDate: DateTime
     tag: Tag
     note: String
+    completed: Boolean
   }
 
    input UpdateTaskInput {
