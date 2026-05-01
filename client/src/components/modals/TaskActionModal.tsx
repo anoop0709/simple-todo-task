@@ -7,50 +7,45 @@ import {
     MenuItem,
 } from '@mui/material';
 import { useState } from 'react';
-import { Tag } from '../../types';
-import type { Task } from '../../types';
-import { normalizeDate, toDateInputValue } from '../../utils/helper';
+import { Tag, type Task } from '../../types';
+import {
+    normalizeDateToSendToBackend,
+    formatDueDateInEdit,
+} from '../../utils/helper';
+import { style } from './ModalStyle';
 
-const style = {
-    position: 'absolute' as const,
-    top: '50%',
-    left: '50%',
-    transform: 'translate(-50%, -50%)',
-    width: { xs: '90%', sm: 400, xl: '50%' },
-    bgcolor: 'background.paper',
-    borderRadius: '5px',
-    boxShadow: 'none',
-    p: 3,
-};
-
-export default function EditTaskModal({
+export default function TaskModal({
     open,
     onClose,
-    onEdit,
+    onAction,
     task,
 }: {
     open: boolean;
     onClose: () => void;
-    onEdit: (task: Task) => void;
+    onAction: (task: Task) => void;
     task: Task;
 }) {
     const [name, setName] = useState(task.name);
-    const [dueDate, setDueDate] = useState(toDateInputValue(task.dueDate));
+    const [dueDate, setDueDate] = useState(formatDueDateInEdit(task.dueDate));
     const [tag, setTag] = useState<Tag | '' | undefined>(task?.tag);
     const [note, setNote] = useState(null);
+    const [isError, setIsError] = useState(false);
 
     const handleSubmit = () => {
-        if (!name.trim()) return;
+        if (!name.trim() && name.length < 3) {
+            setIsError(true);
+            return;
+        }
 
-        const editedTask: Task = {
-            id: task.id,
+        const newTask: Task = {
+            id: task.id !== '' ? task.id : '',
             name,
-            dueDate: normalizeDate(dueDate) || undefined,
+            dueDate: normalizeDateToSendToBackend(dueDate) || undefined,
             tag: tag || undefined,
             note: note || null,
             completed: task.completed,
         };
-        onEdit(editedTask);
+        onAction(newTask);
 
         setName('');
         setDueDate('');
@@ -76,15 +71,21 @@ export default function EditTaskModal({
                     onChange={(e) => setName(e.target.value)}
                     margin="normal"
                     required
+                    error={isError}
+                    helperText={isError && 'Minimum 3 characters required'}
                 />
 
                 <TextField
                     fullWidth
                     type="date"
+                    label="Due date"
                     value={dueDate}
                     slotProps={{
                         htmlInput: {
                             min: new Date().toISOString().split('T')[0],
+                        },
+                        inputLabel: {
+                            shrink: true,
                         },
                     }}
                     onChange={(e) => setDueDate(e.target.value)}
@@ -125,10 +126,10 @@ export default function EditTaskModal({
                     </Button>
                     <Button
                         variant="contained"
- sx={{ color: '#efefef' }}
+                        sx={{ color: '#efefef' }}
                         onClick={handleSubmit}
                     >
-                        Update Task
+                       {task.name !== '' ? 'Update Task' : 'Add Task'}
                     </Button>
                 </Box>
             </Box>

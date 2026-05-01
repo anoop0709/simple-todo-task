@@ -7,6 +7,8 @@ import {
   UPDATE_TASK,
 } from "../graphql/mutations";
 import type { CreateTaskResponse, CreateTaskVariables, GetTasksQuery, UpdateTaskResponse, UpdateTaskVariables } from "../types";
+import { useApolloClient } from "@apollo/client/react";
+
 
 export function useTasks() {
   const { data, loading, refetch } = useQuery<GetTasksQuery>(GET_TASKS, {
@@ -26,6 +28,34 @@ export function useTasks() {
     UpdateTaskVariables
   >(UPDATE_TASK);
 
+
+  const client = useApolloClient();
+  const reorderTasks = (
+    sourceIndex: number,
+    destinationIndex: number,
+    isTodo: boolean
+  ) => {
+    if (!data?.tasks) return;
+
+
+    const todo = data.tasks.filter(task => !task.completed);
+    const done = data.tasks.filter(task => task.completed);
+
+    const list = isTodo ? [...todo] : [...done];
+
+    const [moved] = list.splice(sourceIndex, 1);
+    list.splice(destinationIndex, 0, moved);
+
+    const updatedTasks = isTodo
+      ? [...list, ...done]
+      : [...todo, ...list];
+
+    client.writeQuery({
+      query: GET_TASKS,
+      data: { tasks: updatedTasks },
+    });
+  };
+
   return {
     tasks: data?.tasks ?? [],
     loading,
@@ -33,6 +63,7 @@ export function useTasks() {
     createTask,
     toggleTask,
     deleteTask,
-    updateTask
+    updateTask,
+    reorderTasks
   };
 }

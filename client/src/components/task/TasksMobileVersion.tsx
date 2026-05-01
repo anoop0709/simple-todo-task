@@ -1,8 +1,7 @@
-import type { Task } from '../../types';
-import { Tag } from '../../types';
+import { Tag, type Task } from '../../types';
 import { Box, Typography, Chip, Checkbox } from '@mui/material';
 import { ExpandMoreOutlined as ExpandMoreIcon } from '@mui/icons-material';
-import {  formatDueDateForMobile } from '../../utils/helper';
+import { formatDueDateForMobile } from '../../utils/helper';
 
 type TasksProps = {
     tasks: Task[];

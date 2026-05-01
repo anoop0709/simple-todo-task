@@ -1,5 +1,6 @@
 import mongoose from "mongoose";
 import { Context } from "../../context";
+import { enrichTasksWithWeatherData } from "../../lib/weather";
 
 function requireAuth(context: Context) {
     if (!context.auth.user) {
@@ -12,8 +13,9 @@ export const resolvers = {
     Query: {
         tasks: async (_: unknown, __: unknown, context: Context) => {
             const userId = requireAuth(context);
-
-            return context.models.Task.find({ userId }).sort({ createdAt: -1 });
+            const tasks = await context.models.Task.find({ userId }).sort({ createdAt: -1 });
+            const enriched = await enrichTasksWithWeatherData(tasks);
+            return enriched;
         },
     },
 

@@ -13,7 +13,6 @@ const port = Number(process.env.PORT || 4000);
 const app = express() as any;
 
 
-
 const server = new ApolloServer({
   schema,
 });

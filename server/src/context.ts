@@ -27,7 +27,7 @@ export async function createContext({ req, res }: { req: Request; res: Response 
   const parsed = token ? parseToken(token) : null;
 
   const user = parsed
-    ? { id: parsed.id }   // 👈 ONLY keep id
+    ? { id: parsed.id }
     : null;
   return {
     models,

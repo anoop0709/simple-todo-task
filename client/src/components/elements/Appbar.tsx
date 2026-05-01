@@ -10,8 +10,8 @@ import {
 } from '@mui/material';
 import { Segment } from '@mui/icons-material';
 import { useState } from 'react';
-import { useAuth } from '../hooks/useAuth';
-import { LOGOUT } from '../graphql/mutations';
+import { useAuth } from '../../hooks/useAuth';
+import { LOGOUT } from '../../graphql/mutations';
 import { useApolloClient, useMutation } from '@apollo/client/react';
 import { useNavigate } from 'react-router-dom';
 

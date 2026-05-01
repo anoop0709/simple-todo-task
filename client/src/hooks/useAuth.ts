@@ -1,16 +1,8 @@
 import { useMutation, useQuery } from "@apollo/client/react";
-import { gql } from "@apollo/client";
 import { LOGIN } from "../graphql/mutations";
+import { ME } from "../graphql/queries";
 
-const ME = gql`
-  query {
-    me {
-      id
-      email
-      userName
-    }
-  }
-`;
+
 
 type User = {
   id: string;

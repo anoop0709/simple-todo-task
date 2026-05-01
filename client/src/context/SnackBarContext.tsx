@@ -9,5 +9,3 @@ export type SnackbarContextType = {
 export const SnackbarContext = createContext<SnackbarContextType | undefined>(
     undefined,
 );
-
-

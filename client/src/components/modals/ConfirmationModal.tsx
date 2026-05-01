@@ -1,16 +1,7 @@
 import { Modal, Box, Typography, Button } from '@mui/material';
+import { style } from './ModalStyle';
 
-const style = {
-    position: 'absolute' as const,
-    top: '50%',
-    left: '50%',
-    transform: 'translate(-50%, -50%)',
-    width: { xs: '90%', sm: 400, xl: '20%' },
-    bgcolor: 'background.paper',
-    borderRadius: '5px',
-    boxShadow: 'none',
-    p: 3,
-};
+
 
 export default function ConfirmDeleteTaskModal({
     open,

@@ -84,7 +84,7 @@ export const validateInput = ({
   };
 };
 
-export const normalizeDate = (value: string): string | undefined => {
+export const normalizeDateToSendToBackend = (value: string): string | undefined => {
   if (!value) return undefined;
 
   const parsed = new Date(value);
@@ -94,7 +94,7 @@ export const normalizeDate = (value: string): string | undefined => {
   return parsed.toISOString();
 };
 
-export const formatDate = (iso?: string | null): string => {
+export const formatDateToDisplay = (iso?: string | null): string => {
   if (!iso) return "-";
 
   const date = new Date(iso);
@@ -116,7 +116,7 @@ export const formatDate = (iso?: string | null): string => {
   return `${day}/${month}/${year}`;
 };
 
-export const toDateInputValue = (value?: string | null): string => {
+export const formatDueDateInEdit = (value?: string | null): string => {
   if (!value) return "";
 
   if (value === "Today") {

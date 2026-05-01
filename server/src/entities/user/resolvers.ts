@@ -62,7 +62,7 @@ export const resolvers = {
     },
     logout: async (_: unknown, _args: unknown, context: Context) => {
       context.auth.logout();
-      return true;  
+      return true;
     }
   }
 };

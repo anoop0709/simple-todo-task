@@ -12,20 +12,35 @@ import { LOGOUT } from '../../graphql/mutations';
 import { useNavigate } from 'react-router-dom';
 import { useApolloClient } from '@apollo/client/react';
 import { useState } from 'react';
-import type { Task } from '../../types';
+import { type Task } from '../../types';
 import { useTasks } from '../../hooks/useTask';
 import { GET_TASKS } from '../../graphql/queries';
-import AddTaskModal from '../modals/AddTaskModal';
-import { useSnackbar } from '../../hooks/useSnackBar';
+import TaskModal from '../modals/TaskActionModal';
+import { useSnackbar } from '../../hooks/useSnackbar';
+import { handleError } from '../../services/errorHandler';
 
-export default function TaskHeader() {
+export default function TaskHeader({
+    search,
+    setSearch,
+}: {
+    search: string;
+    setSearch: (e: string) => void;
+}) {
     const { createTask } = useTasks();
     const [logout] = useMutation(LOGOUT);
     const navigate = useNavigate();
     const { showSnackbar } = useSnackbar();
     const [openTaskModal, setOpenTaskModal] = useState(false);
-
     const client = useApolloClient();
+
+    const taskInput = {
+        id: '',
+        name: '',
+        dueDate: '',
+        tag: undefined,
+        note: null,
+        completed: false,
+    };
 
     const handleLogout = async (
         e: React.MouseEvent<HTMLButtonElement, MouseEvent>,
@@ -36,9 +51,9 @@ export default function TaskHeader() {
             showSnackbar('User logout successfull', 'success');
             await client.resetStore();
             navigate('/login');
-        } catch (err) {
-            console.log('Expected logout error:', err);
-            showSnackbar('Something went wrong, please try again', 'error');
+        } catch (error) {
+            const message = handleError(error);
+            showSnackbar(message, 'error');
         }
     };
 
@@ -71,8 +86,8 @@ export default function TaskHeader() {
             });
             showSnackbar('New Task created congratulations!', 'success');
         } catch (error) {
-            console.log(error);
-            showSnackbar('Something went wrong, please try again', 'error');
+            const message = handleError(error);
+            showSnackbar(message, 'error');
         }
     };
 
@@ -107,6 +122,8 @@ export default function TaskHeader() {
                     }}
                 >
                     <TextField
+                        value={search}
+                        onChange={(e) => setSearch(e.target.value)}
                         placeholder="Search"
                         size="small"
                         sx={{
@@ -118,7 +135,10 @@ export default function TaskHeader() {
                             backgroundColor: '#fff',
                             borderRadius: '5px',
                             width: { xs: '140px', md: '220px' },
-                            color: '#64615E',
+                            '& .MuiInputBase-input::placeholder': {
+                                color: '#1E1E1E',
+                                opacity: 1,
+                            },
                         }}
                         slotProps={{
                             input: {
@@ -181,10 +201,11 @@ export default function TaskHeader() {
                 </Button>
             </Box>
             {openTaskModal && (
-                <AddTaskModal
+                <TaskModal
                     open={openTaskModal}
                     onClose={() => setOpenTaskModal(false)}
-                    onAdd={handleAddTask}
+                    onAction={handleAddTask}
+                    task={taskInput}
                 />
             )}
         </>

@@ -12,7 +12,8 @@ import {
 import { Visibility, VisibilityOff } from '@mui/icons-material';
 import { Link } from 'react-router-dom';
 import { validateInput } from '../utils/helper';
-import { useSnackbar } from '../hooks/useSnackBar';
+import { useSnackbar } from '../hooks/useSnackbar';
+import { handleError } from '../services/errorHandler';
 
 export default function Login() {
     const { login, refetch } = useAuth();
@@ -20,13 +21,13 @@ export default function Login() {
 
     const [showPassword, setShowPassword] = useState<boolean>(false);
     const [checked, setChecked] = useState<boolean>(false);
-
-    const [email, setEmail] = useState<string>('');
-    const [password, setPassword] = useState<string>('');
     const [touched, setTouched] = useState<{
         email?: boolean;
         password?: boolean;
     }>({});
+
+    const [email, setEmail] = useState<string>('');
+    const [password, setPassword] = useState<string>('');
 
     const [errors, setErrors] = useState<{
         email?: string;
@@ -80,8 +81,8 @@ export default function Login() {
             showSnackbar('user login successfull', 'success');
             await refetch();
         } catch (error) {
-            console.log(error);
-            showSnackbar('Something went wrong, please try again', 'error');
+            const message = handleError(error);
+            showSnackbar(message, 'error');
         }
     };
 

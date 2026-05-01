@@ -10,27 +10,36 @@ import {
 import {
     EditOutlined as EditIcon,
     DeleteOutlined as DeleteIcon,
+    WbSunny,
 } from '@mui/icons-material';
 
-import { Tag } from '../../types';
-import type { Task } from '../../types';
-import { formatDate } from '../../utils/helper';
+import { Tag, type Task } from '../../types';
+import { formatDateToDisplay } from '../../utils/helper';
 import { useTasks } from '../../hooks/useTask';
 import { GET_TASKS } from '../../graphql/queries';
 import { useState } from 'react';
-import EditTaskModal from '../modals/EditTaskModal';
+import TaskModal from '../modals/TaskActionModal';
 import ConfirmDeleteTaskModal from '../modals/ConfirmationModal';
-import { useSnackbar } from '../../hooks/useSnackBar';
+import { useSnackbar } from '../../hooks/useSnackbar';
+import { handleError } from '../../services/errorHandler';
 
 const tagStyles: Record<Tag, { label: string; bg: string }> = {
-    [Tag.URGENT]: { label: 'Urgent', bg: '#F5D78E' },
+    [Tag.URGENT]: { label: 'Urgent', bg: '#f5bb8e' },
     [Tag.NOT_URGENT]: { label: 'Not urgent', bg: '#E0E0E0' },
     [Tag.HIGH]: { label: 'High', bg: '#FFCDD2' },
     [Tag.MEDIUM]: { label: 'Medium', bg: '#FFE082' },
     [Tag.LOW]: { label: 'Low', bg: '#C8E6C9' },
 };
 
-export default function TaskRow({ task }: { task: Task }) {
+type Props = {
+    task: Task;
+    index: number;
+    setDraggedIndex: (i: number) => void;
+    handleDrop: (i: number) => void;
+};
+
+export default function TaskRow(props: Props) {
+    const { task, index, setDraggedIndex, handleDrop } = props;
     const { deleteTask, toggleTask, refetch, updateTask } = useTasks();
     const { showSnackbar } = useSnackbar();
     const [editModalOpen, setEditModalOpen] = useState(false);
@@ -44,8 +53,8 @@ export default function TaskRow({ task }: { task: Task }) {
             showSnackbar('Task deleted', 'success');
             await refetch();
         } catch (error) {
-            console.log(error);
-            showSnackbar('Something went wrong, please try again', 'error');
+            const message = handleError(error);
+            showSnackbar(message, 'error');
         }
     };
     const handleToggleTask = async () => {
@@ -53,10 +62,10 @@ export default function TaskRow({ task }: { task: Task }) {
             await toggleTask({
                 variables: { id: task.id },
             });
-            showSnackbar('Task done', 'success');
+            showSnackbar('Task updated successfully', 'success');
         } catch (error) {
-            console.log(error);
-            showSnackbar('Something went wrong, please try again', 'error');
+            const message = handleError(error);
+            showSnackbar(message, 'error');
         }
     };
     const handleEditTask = async (task: Task) => {
@@ -91,15 +100,25 @@ export default function TaskRow({ task }: { task: Task }) {
                     });
                 },
             });
-          showSnackbar('Task updated successfully', 'success')
+            showSnackbar('Task updated successfully', 'success');
         } catch (error) {
-            console.log(error);
-            showSnackbar('Something went wrong, please try again', 'error');
+            const message = handleError(error);
+            showSnackbar(message, 'error');
         }
     };
     return (
         <>
-            <TableRow hover>
+            <TableRow
+                hover
+                draggable
+                onDragStart={() => setDraggedIndex(index)}
+                onDragOver={(e) => e.preventDefault()}
+                onDrop={() => handleDrop(index)}
+                sx={{
+                    cursor: 'grab',
+                    '&:active': { cursor: 'grabbing' },
+                }}
+            >
                 <TableCell
                     padding="checkbox"
                     sx={{ width: '5%' }}
@@ -126,7 +145,7 @@ export default function TaskRow({ task }: { task: Task }) {
                 </TableCell>
 
                 <TableCell sx={{ width: '18%' }}>
-                    {formatDate(task?.dueDate) || '-'}
+                    {formatDateToDisplay(task?.dueDate) || '-'}
                 </TableCell>
 
                 <TableCell sx={{ width: '5%' }}>
@@ -144,7 +163,19 @@ export default function TaskRow({ task }: { task: Task }) {
                     )}
                 </TableCell>
 
-                <TableCell sx={{ width: '5%' }}>{task?.note || '-'}</TableCell>
+                <TableCell sx={{ width: '5%' }}>
+                    {task?.note ? (
+                        <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                            (
+                            <WbSunny
+                                sx={{ fontSize: 16, mr: 0.5, color: '#878787' }}
+                            />
+                            {task.note})
+                        </Box>
+                    ) : (
+                        '-'
+                    )}
+                </TableCell>
 
                 <TableCell sx={{ width: '5%' }}>
                     <Box
@@ -171,10 +202,10 @@ export default function TaskRow({ task }: { task: Task }) {
                 </TableCell>
             </TableRow>
             {editModalOpen && (
-                <EditTaskModal
+                <TaskModal
                     open={editModalOpen}
                     onClose={() => setEditModalOpen(false)}
-                    onEdit={handleEditTask}
+                    onAction={handleEditTask}
                     task={task}
                 />
             )}

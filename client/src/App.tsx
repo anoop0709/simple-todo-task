@@ -5,7 +5,7 @@ import Login from './pages/Login';
 import { Navigate, Route, Routes } from 'react-router-dom';
 import Register from './pages/Register';
 import Taskboard from './pages/Taskboard';
-import Header from './components/Appbar';
+import Header from './components/elements/Appbar';
 import { SnackbarProvider } from './context/SnackbarProvider';
 
 export default function App() {
