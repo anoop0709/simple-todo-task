@@ -1,0 +1,29 @@
+service: weather-service
+
+provider:
+  name: aws
+  runtime: nodejs18.x
+  region: eu-west-2
+  environment:
+    WEATHER_API_KEY: ${env:WEATHER_API_KEY}
+    WEATHER_API_BASE_URL: ${env:WEATHER_API_BASE_URL}
+
+plugins:
+  - serverless-esbuild
+
+functions:
+  getWeatherBatch:
+    handler: weather-lambda.handler
+    events:
+      - http:
+          path: weather
+          method: post
+          cors: true
+
+custom:
+  esbuild:
+    bundle: true
+    minify: false
+    sourcemap: true
+    target: node18
+    platform: node
