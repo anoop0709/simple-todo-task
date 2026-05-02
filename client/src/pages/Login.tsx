@@ -74,8 +74,10 @@ export default function Login() {
 
             await login({
                 variables: {
-                    email: cleanEmail,
-                    password: cleanPassword,
+                    input: {
+                        email: cleanEmail,
+                        password: cleanPassword,
+                    },
                 },
             });
             showSnackbar('user login successfull', 'success');
@@ -95,13 +97,14 @@ export default function Login() {
     return (
         <Box
             sx={{
-                minHeight: '100vh',
+                height: '100%',
                 display: 'flex',
                 flexDirection: { xs: 'column', md: 'row' },
                 alignItems: 'center',
                 justifyContent: 'space-around',
-                backgroundColor: '#F7F7F7',
+                backgroundColor: '#ffffff',
                 px: 2,
+                marginTop: 10,
             }}
         >
             <Box
@@ -128,7 +131,7 @@ export default function Login() {
                         Sign in to
                     </Typography>
 
-                    <Typography sx={{ marginBottom: '24px', fontWeight: 500 }}>
+                    <Typography sx={{ marginBottom: '24px', fontWeight: 600 }}>
                         get things done ✨
                     </Typography>
                     <Box sx={{ marginBottom: '20px' }}>
@@ -142,7 +145,6 @@ export default function Login() {
                             onBlur={() => handleBlur('email')}
                             error={touched.email && !!errors.email}
                             helperText={touched.email ? errors.email : ''}
-                            sx={{ borderRadius: '5px' }}
                         />
                     </Box>
                     <Box sx={{ marginBottom: '20px' }}>
@@ -159,10 +161,6 @@ export default function Login() {
                             onBlur={() => handleBlur('password')}
                             error={touched.password && !!errors.password}
                             helperText={touched.password ? errors.password : ''}
-                            sx={{
-                                borderRadius: '5px',
-                                backgroundColor: '#F5F5F5',
-                            }}
                             slotProps={{
                                 input: {
                                     endAdornment: (
@@ -220,7 +218,6 @@ export default function Login() {
                     <Button
                         variant="contained"
                         fullWidth
-                        disabled={!email || !password}
                         onClick={handleLogin}
                         sx={{
                             height: 48,

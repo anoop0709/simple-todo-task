@@ -16,7 +16,7 @@ import {
 import { Tag, type Task } from '../../types';
 import { formatDateToDisplay } from '../../utils/helper';
 import { useTasks } from '../../hooks/useTask';
-import { GET_TASKS } from '../../graphql/queries';
+import { GET_ME_WITH_TASKS } from '../../graphql/queries';
 import React, { useState } from 'react';
 import TaskModal from '../modals/TaskActionModal';
 import ConfirmDeleteTaskModal from '../modals/ConfirmationModal';
@@ -82,23 +82,29 @@ function TaskRow(props: Props) {
                     },
                 },
                 update(cache, { data }) {
-                    const existing = cache.readQuery<{ tasks: Task[] }>({
-                        query: GET_TASKS,
-                    });
+                    const existing = cache.readQuery<{ me: { tasks: Task[] } }>(
+                        {
+                            query: GET_ME_WITH_TASKS,
+                        },
+                    );
 
                     if (!existing || !data?.updateTask) return;
 
                     cache.writeQuery({
-                        query: GET_TASKS,
+                        query: GET_ME_WITH_TASKS,
                         data: {
-                            tasks: existing.tasks.map((task) =>
-                                task.id === data.updateTask.id
-                                    ? data.updateTask
-                                    : task,
-                            ),
+                            me: {
+                                ...existing.me,
+                                tasks: existing.me.tasks.map((task) =>
+                                    task.id === data.updateTask.id
+                                        ? data.updateTask
+                                        : task,
+                                ),
+                            },
                         },
                     });
                 },
+                refetchQueries: [{ query: GET_ME_WITH_TASKS }],
             });
             showSnackbar('Task updated successfully', 'success');
         } catch (error) {
@@ -107,7 +113,7 @@ function TaskRow(props: Props) {
         }
     };
     return (
-        <>
+        <React.Fragment>
             <TableRow
                 hover
                 draggable
@@ -217,7 +223,7 @@ function TaskRow(props: Props) {
                     id={task.id}
                 />
             )}
-        </>
+        </React.Fragment>
     );
 }
 

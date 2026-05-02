@@ -1,6 +1,8 @@
-import { mapError, ValidationError } from '../../lib/error';
+import { mapError, NotFoundError, ValidationError } from '../../lib/error';
 import { Context } from '../../context';
-import { ensureAuthenticated } from '../../lib/helper';
+import { detectCityWithNLP, ensureAuthenticated } from '../../lib/helper';
+
+type cityNamesInTaskMap = Record<string, string>;
 
 export const resolvers = {
   Query: {
@@ -14,16 +16,66 @@ export const resolvers = {
       return { id, email, userName: name };
     },
   },
-  Mutation: {
-    register: async (_: unknown, args: { email: string; password: string; userName: string }, context: Context) => {
+
+  User: {
+    tasks: async (parent: { id: string }, __: unknown, context: Context) => {
       try {
-        const existing = await context.models.User.findOne({ email: args.email });
+        const userId = parent.id;
+        const tasks = await context.models.Task.find({ userId }).sort({ createdAt: -1 });
+        const cityNamesInTaskMap: cityNamesInTaskMap = {};
+
+        tasks.forEach(task => {
+          const city = detectCityWithNLP(task.name);
+          if (city) {
+            cityNamesInTaskMap[task.id] = city;
+          }
+        });
+        const WEATHER_API = process.env.WEATHER_API_URL
+        if (!WEATHER_API) throw new NotFoundError('aws weather api url not found')
+
+        if (!Object.keys(cityNamesInTaskMap).length) {
+          return tasks
+        }
+        const response = await fetch(`${WEATHER_API}`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ cityNamesInTaskMap }),
+        });
+        if (!response.ok) {
+          return tasks;
+        }
+
+        const weatherMap: Record<string, number> = await response.json();
+
+        return tasks.map(task => {
+          const taskObj = task.toObject();
+          const taskId = taskObj._id.toString();
+          const temperatureInCelsius: number = weatherMap[taskId];
+          return {
+            ...taskObj,
+            id: taskId,
+            note:
+              temperatureInCelsius !== undefined
+                ? `${temperatureInCelsius} °C`
+                : taskObj.note,
+          };
+        })
+      } catch (error) {
+        throw mapError(error)
+      }
+    },
+  },
+
+  Mutation: {
+    register: async (_: unknown, { input }: { input: { email: string; password: string; userName: string } }, context: Context) => {
+      try {
+        const existing = await context.models.User.findOne({ email: input.email });
         if (existing) throw new ValidationError("Email already registered");
 
         const user = await context.models.User.create({
-          email: args.email,
-          password: args.password,
-          name: args.userName,
+          email: input.email,
+          password: input.password,
+          name: input.userName,
         });
 
         context.auth.login({ id: user.id });
@@ -41,13 +93,13 @@ export const resolvers = {
       }
     },
 
-    login: async (_: unknown, args: { email: string; password: string }, context: Context) => {
+    login: async (_: unknown, { input }: { input: { email: string; password: string; } }, context: Context) => {
       try {
         const user = await context.models.User
-          .findOne({ email: args.email })
+          .findOne({ email: input.email })
           .select("+password");
 
-        if (!user || !(await user.matchPassword(args.password))) {
+        if (!user || !(await user.matchPassword(input.password))) {
           throw new ValidationError("Invalid email or password");
         }
 

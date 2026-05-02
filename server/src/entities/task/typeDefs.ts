@@ -35,11 +35,6 @@ export const typeDefs = `#graphql
     completed: Boolean
   }
 
-
-  type Query {
-    tasks: [Task!]!
-  }
-
   type Mutation {
     createTask(input: CreateTaskInput!): Task!
     toggleTask(id: ID!): Task!

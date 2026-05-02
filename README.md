@@ -8,10 +8,12 @@ This repository contains a full-stack Todo application built with React + TypeSc
 - Add, edit, delete, and check as done tasks
 - JWT authentication and GraphQL API
 - Weather enrichment for task name containing a city name
+- AWS lambda and Api Gateway used for weather data fetch
 - Modular client components and robust error handling
 - Drag drop, Tag, Due date, Search 
 - mobile friendly ui
 - Snack bar
+- Error handling
 
 
 ## Run locally

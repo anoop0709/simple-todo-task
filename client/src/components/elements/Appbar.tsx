@@ -9,7 +9,7 @@ import {
     useTheme,
 } from '@mui/material';
 import { Segment } from '@mui/icons-material';
-import { useState } from 'react';
+import React, { useState } from 'react';
 import { useAuth } from '../../hooks/useAuth';
 import { useApolloClient } from '@apollo/client/react';
 import { useNavigate } from 'react-router-dom';
@@ -51,7 +51,7 @@ export default function Header() {
             position="static"
             elevation={0}
             sx={{
-                backgroundColor: isLoggedIn ? '#000' : '#F7F7F7',
+                backgroundColor: isLoggedIn ? '#000' : '#ffffff',
                 color: isLoggedIn ? '#fff' : '#000',
             }}
         >
@@ -71,7 +71,7 @@ export default function Header() {
                 </Typography>
 
                 {isLoggedIn && isShowMenuBar && (
-                    <>
+                    <React.Fragment>
                         <IconButton
                             color="inherit"
                             onClick={handleMenuOpen}
@@ -101,7 +101,7 @@ export default function Header() {
                                 Logout
                             </MenuItem>
                         </Menu>
-                    </>
+                    </React.Fragment>
                 )}
             </Toolbar>
         </AppBar>

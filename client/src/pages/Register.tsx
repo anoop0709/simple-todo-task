@@ -1,7 +1,5 @@
 import { useState } from 'react';
-import { useMutation } from '@apollo/client/react';
 import { useNavigate } from 'react-router-dom';
-import { REGISTER } from '../graphql/mutations';
 import {
     Box,
     Button,
@@ -18,9 +16,8 @@ import { useSnackbar } from '../hooks/useSnackbar';
 import { handleError } from '../services/errorHandler';
 
 export default function Register() {
-    const { refetch } = useAuth();
+    const { refetch, register } = useAuth();
     const { showSnackbar } = useSnackbar();
-    const [register] = useMutation(REGISTER);
 
     const navigate = useNavigate();
 
@@ -85,9 +82,11 @@ export default function Register() {
 
             await register({
                 variables: {
-                    email: cleanEmail,
-                    password: cleanPassword,
-                    userName: cleanName,
+                    input: {
+                        email: cleanEmail,
+                        password: cleanPassword,
+                        userName: cleanName,
+                    },
                 },
             });
             showSnackbar('User register successfully');
@@ -102,13 +101,14 @@ export default function Register() {
     return (
         <Box
             sx={{
-                minHeight: '100vh',
+                height: '100%',
                 display: 'flex',
                 flexDirection: { xs: 'column', md: 'row' },
                 alignItems: 'center',
                 justifyContent: 'space-around',
-                backgroundColor: '#F7F7F7',
+                backgroundColor: '#ffffff',
                 px: 2,
+                marginTop: 10,
             }}
         >
             <Box
@@ -138,7 +138,7 @@ export default function Register() {
                         Sign up to
                     </Typography>
 
-                    <Typography sx={{ marginBottom: '24px', fontWeight: 500 }}>
+                    <Typography sx={{ marginBottom: '24px', fontWeight: 600 }}>
                         get things done ✨
                     </Typography>
                     <Box sx={{ marginBottom: '20px' }}>
@@ -153,9 +153,6 @@ export default function Register() {
                             onBlur={() => handleBlur('email')}
                             error={touched.email && !!errors.email}
                             helperText={touched.email ? errors.email : ''}
-                            sx={{
-                                mb: { xs: 1.5, md: 2 },
-                            }}
                         />
                     </Box>
                     <Box sx={{ marginBottom: '20px' }}>
@@ -170,9 +167,6 @@ export default function Register() {
                             onBlur={() => handleBlur('name')}
                             error={touched.name && !!errors.name}
                             helperText={touched.name ? errors.name : ''}
-                            sx={{
-                                mb: { xs: 1.5, md: 2 },
-                            }}
                         />
                     </Box>
                     <Box sx={{ marginBottom: '20px' }}>
@@ -188,9 +182,6 @@ export default function Register() {
                             onBlur={() => handleBlur('password')}
                             error={touched.password && !!errors.password}
                             helperText={touched.password ? errors.password : ''}
-                            sx={{
-                                mb: { xs: 1.5, md: 2 },
-                            }}
                             slotProps={{
                                 input: {
                                     endAdornment: (
@@ -257,7 +248,6 @@ export default function Register() {
                                     ? errors.confirmPassword
                                     : ''
                             }
-                            sx={{ mb: { xs: 1.5, md: 3 } }}
                         />
                     </Box>
                     <Button

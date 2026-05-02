@@ -8,6 +8,7 @@ export const Tag = {
 
 export type Tag = (typeof Tag)[keyof typeof Tag];
 
+
 export type Task = {
   id?: string;
   name: string;
@@ -17,8 +18,13 @@ export type Task = {
   completed?: boolean;
 };
 
-export type GetTasksQuery = {
-  tasks: Task[];
+export type GetMeWithTasks = {
+  me: {
+    id: string;
+    email: string;
+    userName: string;
+    tasks: Task[];
+  } | null;
 };
 
 export type CreateTaskResponse = {

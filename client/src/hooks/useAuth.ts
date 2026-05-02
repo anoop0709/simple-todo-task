@@ -1,23 +1,14 @@
 import { useMutation, useQuery } from "@apollo/client/react";
-import { LOGIN, LOGOUT } from "../graphql/mutations";
-import { ME } from "../graphql/queries";
+import { LOGIN, LOGOUT, REGISTER } from "../graphql/mutations";
+import { GET_ME_WITH_TASKS } from "../graphql/queries";
+import type { GetMeWithTasks } from "../types";
 
-
-
-type User = {
-  id: string;
-  email: string;
-  userName: string;
-};
-
-type MeQuery = {
-  me: User | null;
-};
 
 export function useAuth() {
+  const [register] = useMutation(REGISTER);
   const [login] = useMutation(LOGIN);
   const [logout] = useMutation(LOGOUT)
-  const { data, loading, refetch } = useQuery<MeQuery>(ME, {
+  const { data, loading, refetch } = useQuery<GetMeWithTasks>(GET_ME_WITH_TASKS, {
     errorPolicy: "all",
     fetchPolicy: "network-only",
   });
@@ -25,6 +16,7 @@ export function useAuth() {
   return {
     user: data?.me ?? null,
     loading,
+    register,
     login,
     logout,
     refetch,

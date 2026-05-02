@@ -17,18 +17,9 @@ export type Task = {
     completed?: boolean;
 };
 
-export interface UserRecord {
+export interface User {
     email: string;
     name: string;
     password: string;
-}
-
-export interface WeatherInfo {
-    temperatureCelsius?: number;
-}
-
-export interface LocationSearchResult {
-    current?: {
-        temp_c?: number;
-    }
+    tasks:[Task]
 }

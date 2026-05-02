@@ -1,18 +1,12 @@
 import { gql } from "@apollo/client";
 
 
-export const ME = gql`
-  query {
-    me {
-      id
-      email
-      userName
-    }
-  }
-`;
-
-export const GET_TASKS = gql`
-  query GetTasks {
+export const GET_ME_WITH_TASKS = gql`
+  query GetMeWithTasks {
+  me {
+    id
+    email
+    userName
     tasks {
       id
       name
@@ -22,4 +16,5 @@ export const GET_TASKS = gql`
       completed
     }
   }
+}
 `;

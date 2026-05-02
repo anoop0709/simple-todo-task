@@ -1,7 +1,7 @@
-import { Box } from '@mui/material';
+import { Box, Typography } from '@mui/material';
 import TaskHeader from '../components/task/TaskBoardHeader';
 import { useTasks } from '../hooks/useTask';
-import { useMemo, useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { useTheme, useMediaQuery } from '@mui/material';
 import { Tasks } from '../components/task/Tasks';
 import { TasksMobileVersion } from '../components/task/TasksMobileVersion';
@@ -39,8 +39,27 @@ export default function Taskboard() {
                 search={search}
                 setSearch={setSearch}
             />
+            {!tasks.length && (
+                <Box
+                    sx={{
+                        width: '100%',
+                        margin: '200px 0px',
+                        padding: '24px',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                    }}
+                >
+                    <Typography
+                        variant="h5"
+                        sx={{ color: '#878787' }}
+                    >
+                        No tasks are added, Please start with add a task
+                    </Typography>
+                </Box>
+            )}
             {isMobile ? (
-                <>
+                <React.Fragment>
                     <TasksMobileVersion
                         tasks={taskTodo}
                         expandTasks={isTaskToDoExpanded}
@@ -53,9 +72,9 @@ export default function Taskboard() {
                         setExpandTask={setIsTaskDoneExpanded}
                         isTodo={false}
                     />
-                </>
+                </React.Fragment>
             ) : (
-                <>
+                <React.Fragment>
                     <Tasks
                         tasks={taskTodo}
                         expandTasks={isTaskToDoExpanded}
@@ -70,7 +89,7 @@ export default function Taskboard() {
                         isTodo={false}
                         reorderTasks={reorderTasks}
                     />
-                </>
+                </React.Fragment>
             )}
         </Box>
     );

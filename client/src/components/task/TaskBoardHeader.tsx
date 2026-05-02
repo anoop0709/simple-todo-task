@@ -5,14 +5,13 @@ import {
     InputAdornment,
     Button,
 } from '@mui/material';
-import SearchIcon from '@mui/icons-material/Search';
-import LogoutIcon from '@mui/icons-material/Logout';
+import { Search, LockOutlined } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
 import { useApolloClient } from '@apollo/client/react';
-import { useState } from 'react';
+import React, { useState } from 'react';
 import { type Task } from '../../types';
 import { useTasks } from '../../hooks/useTask';
-import { GET_TASKS } from '../../graphql/queries';
+import { GET_ME_WITH_TASKS } from '../../graphql/queries';
 import TaskModal from '../modals/TaskActionModal';
 import { useSnackbar } from '../../hooks/useSnackbar';
 import { handleError } from '../../services/errorHandler';
@@ -26,7 +25,7 @@ export default function TaskHeader({
     setSearch: (e: string) => void;
 }) {
     const { createTask } = useTasks();
-    const {logout} = useAuth()
+    const { logout } = useAuth();
     const navigate = useNavigate();
     const { showSnackbar } = useSnackbar();
     const [openTaskModal, setOpenTaskModal] = useState(false);
@@ -69,19 +68,25 @@ export default function TaskHeader({
                 },
 
                 update(cache, { data }) {
-                    const existing = cache.readQuery<{ tasks: Task[] }>({
-                        query: GET_TASKS,
-                    });
+                    const existing = cache.readQuery<{ me: { tasks: Task[] } }>(
+                        {
+                            query: GET_ME_WITH_TASKS,
+                        },
+                    );
 
                     if (!existing || !data?.createTask) return;
 
                     cache.writeQuery({
-                        query: GET_TASKS,
+                        query: GET_ME_WITH_TASKS,
                         data: {
-                            tasks: [data.createTask, ...existing.tasks],
+                            me: {
+                                ...existing.me,
+                                tasks: [data.createTask, ...existing.me.tasks],
+                            },
                         },
                     });
                 },
+                refetchQueries: [{ query: GET_ME_WITH_TASKS }],
             });
             showSnackbar('New Task created congratulations!', 'success');
         } catch (error) {
@@ -91,7 +96,7 @@ export default function TaskHeader({
     };
 
     return (
-        <>
+        <React.Fragment>
             <Box
                 sx={{
                     width: '100%',
@@ -143,7 +148,7 @@ export default function TaskHeader({
                             input: {
                                 startAdornment: (
                                     <InputAdornment position="start">
-                                        <SearchIcon sx={{ color: '#1E1E1E' }} />
+                                        <Search sx={{ color: '#1E1E1E' }} />
                                     </InputAdornment>
                                 ),
                             },
@@ -152,7 +157,7 @@ export default function TaskHeader({
                     <Button
                         onClick={(e) => handleLogout(e)}
                         variant="outlined"
-                        startIcon={<LogoutIcon />}
+                        startIcon={<LockOutlined />}
                         sx={{
                             display: {
                                 xs: 'none',
@@ -207,6 +212,6 @@ export default function TaskHeader({
                     task={taskInput}
                 />
             )}
-        </>
+        </React.Fragment>
     );
 }

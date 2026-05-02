@@ -12,7 +12,7 @@ import { ExpandMoreOutlined as ExpandMoreIcon } from '@mui/icons-material';
 import TaskRow from '../task/TaskRow';
 import TaskRowHeader from '../task/TaskRowHeader';
 import { type Task } from '../../types';
-import { useCallback, useState } from 'react';
+import React, { useCallback, useState } from 'react';
 
 type TasksProps = {
     tasks: Task[];
@@ -55,7 +55,7 @@ export const Tasks = ({
     if (!tasks.length) return null;
 
     return (
-        <>
+        <React.Fragment>
             <Box
                 sx={{
                     width: '96%',
@@ -115,6 +115,6 @@ export const Tasks = ({
                     </Table>
                 </TableContainer>
             )}
-        </>
+        </React.Fragment>
     );
 };

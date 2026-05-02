@@ -7,6 +7,7 @@ import Register from './pages/Register';
 import Taskboard from './pages/Taskboard';
 import Header from './components/elements/Appbar';
 import { SnackbarProvider } from './context/SnackbarProvider';
+import React from 'react';
 
 export default function App() {
     const { user, loading } = useAuth();
@@ -26,11 +27,10 @@ export default function App() {
     }
 
     return (
-        <>
+        <React.Fragment>
             <Header />
             <SnackbarProvider>
                 <Routes>
-                    {/* Public routes */}
                     <Route
                         path="/login"
                         element={!user ? <Login /> : <Navigate to="/" />}
@@ -51,6 +51,6 @@ export default function App() {
                     />
                 </Routes>
             </SnackbarProvider>
-        </>
+        </React.Fragment>
     );
 }

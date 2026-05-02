@@ -109,6 +109,16 @@ export const formatDateToDisplay = (iso?: string | null): string => {
 
   if (isToday) return "Today";
 
+
+  const isSameMonth = date.getMonth() === today.getMonth();
+
+  if (isSameMonth) {
+    return date.toLocaleDateString('en-US', {
+      month: 'short',
+      day: 'numeric',
+    });
+  }
+
   const day = String(date.getDate()).padStart(2, "0");
   const month = String(date.getMonth() + 1).padStart(2, "0");
   const year = date.getFullYear();
@@ -139,10 +149,10 @@ export function formatDueDateForMobile(dateString: string | Date): string {
     date.getMonth() === today.getMonth() &&
     date.getFullYear() === today.getFullYear();
 
-  const formatted = date.toLocaleDateString('en-GB', {
+  const formatted = date.toLocaleDateString('en-US', {
     month: 'short',
     day: 'numeric',
   });
 
-  return isToday ? `Today ${formatted}` : formatted;
+  return isToday ? `Today - ${formatted}` : formatted;
 }

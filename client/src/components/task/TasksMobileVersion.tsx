@@ -2,6 +2,7 @@ import { Tag, type Task } from '../../types';
 import { Box, Typography, Chip, Checkbox } from '@mui/material';
 import { ExpandMoreOutlined as ExpandMoreIcon } from '@mui/icons-material';
 import { formatDueDateForMobile } from '../../utils/helper';
+import React from 'react';
 
 type TasksProps = {
     tasks: Task[];
@@ -29,7 +30,7 @@ export const TasksMobileVersion = ({
 
     if (!tasks.length) return null;
     return (
-        <>
+        <React.Fragment>
             <Box
                 sx={{
                     width: '96%',
@@ -117,6 +118,6 @@ export const TasksMobileVersion = ({
                     ))}
                 </Box>
             ) : null}
-        </>
+        </React.Fragment>
     );
 };

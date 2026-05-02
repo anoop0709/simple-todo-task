@@ -1,17 +1,17 @@
 import { useQuery, useMutation } from "@apollo/client/react";
-import { GET_TASKS } from "../graphql/queries";
+import { GET_ME_WITH_TASKS } from "../graphql/queries";
 import {
   CREATE_TASK,
   TOGGLE_TASK,
   DELETE_TASK,
   UPDATE_TASK,
 } from "../graphql/mutations";
-import type { CreateTaskResponse, CreateTaskVariables, GetTasksQuery, UpdateTaskResponse, UpdateTaskVariables } from "../types";
+import type { CreateTaskResponse, CreateTaskVariables, GetMeWithTasks, UpdateTaskResponse, UpdateTaskVariables } from "../types";
 import { useApolloClient } from "@apollo/client/react";
 
 
 export function useTasks() {
-  const { data, loading, refetch } = useQuery<GetTasksQuery>(GET_TASKS, {
+  const { data, loading, refetch } = useQuery<GetMeWithTasks>(GET_ME_WITH_TASKS, {
     fetchPolicy: "cache-first",
   });
 
@@ -36,11 +36,11 @@ export function useTasks() {
     destinationIndex: number,
     isTodo: boolean
   ) => {
-    if (!data?.tasks) return;
+    if (!data?.me?.tasks) return;
 
 
-    const todo = data.tasks.filter(task => !task.completed);
-    const done = data.tasks.filter(task => task.completed);
+    const todo = data.me.tasks.filter(task => !task.completed);
+    const done = data.me.tasks.filter(task => task.completed);
 
     const list = isTodo ? [...todo] : [...done];
 
@@ -52,13 +52,18 @@ export function useTasks() {
       : [...todo, ...list];
 
     client.writeQuery({
-      query: GET_TASKS,
-      data: { tasks: updatedTasks },
+      query: GET_ME_WITH_TASKS,
+      data: {
+        me: {
+          ...data?.me,
+          tasks: updatedTasks,
+        }
+      },
     });
   };
 
   return {
-    tasks: data?.tasks ?? [],
+    tasks: data?.me?.tasks ?? [],
     loading,
     refetch,
     createTask,
