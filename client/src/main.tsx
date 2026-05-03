@@ -8,6 +8,7 @@ import App from './App';
 import { theme } from './theme';
 import { ThemeProvider } from '@mui/material/styles';
 import ErrorBoundary from './components/error/ErrorBoundary.tsx';
+import { SnackbarProvider } from './context/SnackbarProvider.tsx';
 
 createRoot(document.getElementById('root')!).render(
     <StrictMode>
@@ -15,9 +16,11 @@ createRoot(document.getElementById('root')!).render(
             <BrowserRouter>
                 <ThemeProvider theme={theme}>
                     <CssBaseline />
-                    <ErrorBoundary>
-                        <App />
-                    </ErrorBoundary>
+                    <SnackbarProvider>
+                        <ErrorBoundary>
+                            <App />
+                        </ErrorBoundary>
+                    </SnackbarProvider>
                 </ThemeProvider>
             </BrowserRouter>
         </ApolloProvider>

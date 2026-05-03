@@ -9,7 +9,6 @@ export function useAuth() {
   const [login] = useMutation(LOGIN);
   const [logout] = useMutation(LOGOUT)
   const { data, loading, refetch } = useQuery<GetMeWithTasks>(GET_ME_WITH_TASKS, {
-    errorPolicy: "all",
     fetchPolicy: "network-only",
   });
 

@@ -10,8 +10,8 @@ export const connectDb = async (): Promise<void> => {
     if (!MONGODB_URI) {
       throw new Error('MONGODB_URI is required in environment variables.');
     }
-    const conn = await mongoose.connect(MONGODB_URI! as string);
-    console.log(`MongoDB Connected: ${conn.connection.host}`);
+    const dbConnection = await mongoose.connect(MONGODB_URI! as string);
+    console.log(`MongoDB Connected: ${dbConnection.connection.host}`);
   } catch (error: any) {
     console.error(`MongoDB Connection Error: ${error.message}`);
     process.exit(1);

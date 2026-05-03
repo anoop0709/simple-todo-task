@@ -1,37 +1,123 @@
 # Todo App
 
-This repository contains a full-stack Todo application built with React + TypeScript on the frontend and Node.js + GraphQL on the backend.
+A full-stack Todo application built with **React + TypeScript** (frontend) and **Node.js + GraphQL** (backend), featuring real-time task management and serverless weather enrichment.
 
-## Features
-- Login / register / logout flows
-- Task Board with task list
-- Add, edit, delete, and check as done tasks
-- JWT authentication and GraphQL API
-- Weather enrichment for task name containing a city name
-- AWS lambda and Api Gateway used for weather data fetch
-- Modular client components and robust error handling
-- Drag drop, Tag, Due date, Search 
-- mobile friendly ui
-- Snack bar
-- Error handling
+---
 
+## 🚀 Features
 
-## Run locally
+* Authentication (Register / Login / Logout)
+* Task management (Create, Update, Delete, Toggle)
+* Task board with drag & drop support
+* Tags, due dates, and search
+* Material UI library used for Front-end design
+* Weather enrichment based on city names in task titles
+* Serverless integration using AWS Lambda + API Gateway
+* Mobile-friendly UI
+* Snackbar notifications
+* Robust error handling
 
+---
 
-### Backend
-1. `cd server`
-2. `npm install`
-3. Create a `.env` file from `.env`
-4. `npm run dev`
-
-Server will run by default at `http://localhost:4000` with GraphQL served at `/graphql`.
+## 🏗 Tech Stack
 
 ### Frontend
-1. `cd client`
-2. `npm install`
-3. `npm run dev`
 
-Frontend will run by default at `http://localhost:5173`.
+* React
+* TypeScript
+* Apollo Client
+* Vite
 
-## Notes
+### Backend
+
+* Node.js
+* GraphQL
+* MongoDB
+* JWT Authentication
+
+### AWS
+
+* AWS Lambda
+* API Gateway
+
+---
+
+## ⚙️ Architecture Overview
+
+* Tasks are fetched via `me → tasks` GraphQL query
+* City names are extracted from task titles using NLP
+* Weather data is fetched via a serverless Lambda function
+* Results are merged into task notes dynamically
+
+---
+
+## 🧪 Run Locally
+
+### 1. Backend
+
+```bash
+cd server
+npm install
+```
+
+Create `.env` file:
+
+```env
+PORT=4000
+MONGO_URI=your_mongodb_uri
+JWT_SECRET=your_secret
+WEATHER_API_URL=your_lambda_endpoint
+```
+
+Run server:
+
+```bash
+npm run dev
+```
+
+👉 Runs at: http://localhost:4000/graphql
+
+---
+
+### 2. Frontend
+
+```bash
+cd client
+npm install
+npm run dev
+```
+
+👉 Runs at: http://localhost:5173
+
+---
+
+##  AWS Setup (Weather Service)
+
+* Deploy Lambda using Serverless Framework
+* API Gateway exposes `/weather` endpoint
+* Uses external weather API
+* Environment variable required:
+
+```env
+WEATHER_API_KEY=your_api_key
+```
+
+---
+
+##  Notes
+
+* Weather data is dynamically injected at query time
+* Apollo Client cache is used for UI updates
+* Refetch is triggered after mutations to ensure consistency
+* `.serverless/` and `.env` are excluded from version control
+
+---
+
+## 🗣 Design Decisions
+
+* Used GraphQL field resolvers (`User.tasks`) for lazy data fetching
+* Separated backend logic and serverless infrastructure
+* Leveraged batching to optimize external API calls
+* Used input types in mutations for scalability
+
+---

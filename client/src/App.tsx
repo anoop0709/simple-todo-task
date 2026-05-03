@@ -6,7 +6,6 @@ import { Navigate, Route, Routes } from 'react-router-dom';
 import Register from './pages/Register';
 import Taskboard from './pages/Taskboard';
 import Header from './components/elements/Appbar';
-import { SnackbarProvider } from './context/SnackbarProvider';
 import React from 'react';
 
 export default function App() {
@@ -29,28 +28,26 @@ export default function App() {
     return (
         <React.Fragment>
             <Header />
-            <SnackbarProvider>
-                <Routes>
-                    <Route
-                        path="/login"
-                        element={!user ? <Login /> : <Navigate to="/" />}
-                    />
-                    <Route
-                        path="/register"
-                        element={!user ? <Register /> : <Navigate to="/" />}
-                    />
-                    <Route
-                        path="/"
-                        element={
-                            user ? <Taskboard /> : <Navigate to="/login" />
-                        }
-                    />
-                    <Route
-                        path="*"
-                        element={<Navigate to="/" />}
-                    />
-                </Routes>
-            </SnackbarProvider>
+            <Routes>
+                <Route
+                    path="/login"
+                    element={!user ? <Login /> : <Navigate to="/taskboard" />}
+                />
+                <Route
+                    path="/register"
+                    element={
+                        !user ? <Register /> : <Navigate to="/taskboard" />
+                    }
+                />
+                <Route
+                    path="/taskboard"
+                    element={user ? <Taskboard /> : <Navigate to="/login" />}
+                />
+                <Route
+                    path="*"
+                    element={<Navigate to="/taskboard" />}
+                />
+            </Routes>
         </React.Fragment>
     );
 }

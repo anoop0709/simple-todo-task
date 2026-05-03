@@ -11,88 +11,51 @@ import {
 } from '@mui/material';
 import { Visibility, VisibilityOff } from '@mui/icons-material';
 import { Link } from 'react-router-dom';
+
 import { validateInput } from '../utils/helper';
 import { useSnackbar } from '../hooks/useSnackbar';
 import { handleError } from '../services/errorHandler';
+import { useForm } from '../hooks/useForm';
+
+type LoginForm = {
+    email: string;
+    password: string;
+};
 
 export default function Login() {
     const { login, refetch } = useAuth();
     const { showSnackbar } = useSnackbar();
 
-    const [showPassword, setShowPassword] = useState<boolean>(false);
-    const [checked, setChecked] = useState<boolean>(false);
-    const [touched, setTouched] = useState<{
-        email?: boolean;
-        password?: boolean;
-    }>({});
+    const [showPassword, setShowPassword] = useState(false);
+    const [checked, setChecked] = useState(false);
 
-    const [email, setEmail] = useState<string>('');
-    const [password, setPassword] = useState<string>('');
+    const { handleSubmit, getTextFieldProps } = useForm<LoginForm>({
+        initialValues: {
+            email: '',
+            password: '',
+        },
+        validate: validateInput,
+        onSubmit: async (values) => {
+            try {
+                const { cleanEmail, cleanPassword } = validateInput(values);
 
-    const [errors, setErrors] = useState<{
-        email?: string;
-        password?: string;
-    }>({});
-
-    const handleEmailChange = (value: string) => {
-        setEmail(value);
-
-        const { errors } = validateInput({
-            email: value,
-            password,
-        });
-
-        setErrors(errors);
-    };
-
-    const handlePasswordChange = (value: string) => {
-        setPassword(value);
-
-        const { errors } = validateInput({
-            email,
-            password: value,
-        });
-
-        setErrors(errors);
-    };
-
-    const handleBlur = (field: 'email' | 'password') => {
-        setTouched((prev) => ({ ...prev, [field]: true }));
-    };
-
-    const handleLogin = async () => {
-        try {
-            const { isValid, cleanEmail, errors, cleanPassword } =
-                validateInput({
-                    email,
-                    password,
+                await login({
+                    variables: {
+                        input: {
+                            email: cleanEmail,
+                            password: cleanPassword,
+                        },
+                    },
                 });
 
-            setErrors(errors);
-
-            if (!isValid) return;
-
-            await login({
-                variables: {
-                    input: {
-                        email: cleanEmail,
-                        password: cleanPassword,
-                    },
-                },
-            });
-            showSnackbar('user login successfull', 'success');
-            await refetch();
-        } catch (error) {
-            const message = handleError(error);
-            showSnackbar(message, 'error');
-        }
-    };
-
-    const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-        setChecked(event.target.checked);
-    };
-
-    const handleClickShowPassword = () => setShowPassword((show) => !show);
+                showSnackbar('User login successful', 'success');
+                await refetch();
+            } catch (error) {
+                const message = handleError(error);
+                showSnackbar(message, 'error');
+            }
+        },
+    });
 
     return (
         <Box
@@ -113,144 +76,126 @@ export default function Login() {
                     padding: { xs: '24px', md: '40px' },
                     borderRadius: '8px',
                     border: { xs: 'none', md: '0.2px solid #878787' },
-                    boxShadow: { xs: 'none', md: 'none' },
                 }}
             >
-                <Box sx={{ width: '100%' }}>
-                    <Typography
-                        variant="h5"
-                        sx={{ fontWeight: 900, marginBottom: '20px' }}
-                    >
-                        Welcome !
-                    </Typography>
+                <Typography
+                    variant="h5"
+                    sx={{ fontWeight: 900, mb: 2 }}
+                >
+                    Welcome !{' '}
+                </Typography>
 
-                    <Typography
-                        variant="h4"
-                        sx={{ fontWeight: 900 }}
-                    >
-                        Sign in to
-                    </Typography>
+                <Typography
+                    variant="h4"
+                    sx={{ fontWeight: 900 }}
+                >
+                    Sign in to
+                </Typography>
 
-                    <Typography sx={{ marginBottom: '24px', fontWeight: 600 }}>
-                        get things done ✨
-                    </Typography>
-                    <Box sx={{ marginBottom: '20px' }}>
-                        <Typography>Enter your email</Typography>
+                <Typography sx={{ mb: 3, fontWeight: 600 }}>
+                    get things done ✨
+                </Typography>
 
-                        <TextField
-                            fullWidth
-                            placeholder="yours@example.com"
-                            value={email}
-                            onChange={(e) => handleEmailChange(e.target.value)}
-                            onBlur={() => handleBlur('email')}
-                            error={touched.email && !!errors.email}
-                            helperText={touched.email ? errors.email : ''}
-                        />
-                    </Box>
-                    <Box sx={{ marginBottom: '20px' }}>
-                        <Typography>Enter your password</Typography>
-
-                        <TextField
-                            fullWidth
-                            placeholder="Password"
-                            type={showPassword ? 'text' : 'password'}
-                            value={password}
-                            onChange={(e) =>
-                                handlePasswordChange(e.target.value)
-                            }
-                            onBlur={() => handleBlur('password')}
-                            error={touched.password && !!errors.password}
-                            helperText={touched.password ? errors.password : ''}
-                            slotProps={{
-                                input: {
-                                    endAdornment: (
-                                        <InputAdornment position="end">
-                                            <IconButton
-                                                color="primary"
-                                                onClick={
-                                                    handleClickShowPassword
-                                                }
-                                            >
-                                                {showPassword ? (
-                                                    <Visibility />
-                                                ) : (
-                                                    <VisibilityOff />
-                                                )}
-                                            </IconButton>
-                                        </InputAdornment>
-                                    ),
-                                },
-                            }}
-                        />
-                    </Box>
-                    <Box
-                        sx={{
-                            display: 'flex',
-                            justifyContent: 'space-between',
-                            marginTop: '20px',
-                            marginBottom: '30px',
-                        }}
-                    >
-                        <Box sx={{ display: 'flex', gap: 1 }}>
-                            <Checkbox
-                                checked={checked}
-                                onChange={handleChange}
-                                sx={{ padding: 0 }}
-                            />
-                            <Typography sx={{ color: '#878787' }}>
-                                Remember me
-                            </Typography>
-                        </Box>
-
-                        <Link
-                            to="/login"
-                            style={{
-                                color: '#00C495',
-                                fontWeight: 800,
-                                fontSize: '14px',
-                                textDecoration: 'none',
-                            }}
-                        >
-                            Forgot Password?
-                        </Link>
-                    </Box>
-
-                    <Button
-                        variant="contained"
+                <Box sx={{ mb: 2 }}>
+                    <Typography>Enter your email</Typography>
+                    <TextField
                         fullWidth
-                        onClick={handleLogin}
-                        sx={{
-                            height: 48,
-                            borderRadius: '5px',
-                            textTransform: 'none',
-                            fontWeight: 600,
-                        }}
-                    >
-                        Login
-                    </Button>
-                    <Box
-                        sx={{
-                            display: 'flex',
-                            justifyContent: 'center',
-                            marginTop: '16px',
-                        }}
-                    >
-                        <Typography sx={{ color: '#878787' }}>
-                            Don't have an Account?
-                        </Typography>
+                        placeholder="yours@example.com"
+                        {...getTextFieldProps('email')}
+                    />
+                </Box>
 
-                        <Link
-                            to="/register"
-                            style={{
-                                color: '#00C495',
-                                fontWeight: 800,
-                                marginLeft: '6px',
-                                textDecoration: 'none',
-                            }}
-                        >
-                            Register
-                        </Link>
+                <Box sx={{ mb: 2 }}>
+                    <Typography>Enter your password</Typography>
+                    <TextField
+                        fullWidth
+                        type={showPassword ? 'text' : 'password'}
+                        {...getTextFieldProps('password')}
+                        slotProps={{
+                            input: {
+                                endAdornment: (
+                                    <InputAdornment position="end">
+                                        <IconButton
+                                            color="primary"
+                                            onClick={() =>
+                                                setShowPassword((p) => !p)
+                                            }
+                                        >
+                                            {showPassword ? (
+                                                <Visibility />
+                                            ) : (
+                                                <VisibilityOff />
+                                            )}
+                                        </IconButton>
+                                    </InputAdornment>
+                                ),
+                            },
+                        }}
+                    />
+                </Box>
+
+                <Box
+                    sx={{
+                        display: 'flex',
+                        justifyContent: 'space-between',
+                        mt: 2,
+                        mb: 3,
+                    }}
+                >
+                    <Box sx={{ display: 'flex', gap: 1 }}>
+                        <Checkbox
+                            checked={checked}
+                            onChange={(e) => setChecked(e.target.checked)}
+                            sx={{ p: 0 }}
+                        />
+                        <Typography sx={{ color: '#878787' }}>
+                            Remember me
+                        </Typography>
                     </Box>
+
+                    <Link
+                        to="/login"
+                        style={{
+                            color: '#00C495',
+                            fontWeight: 800,
+                            fontSize: '14px',
+                            textDecoration: 'none',
+                        }}
+                    >
+                        Forgot Password?
+                    </Link>
+                </Box>
+
+                <Button
+                    variant="contained"
+                    fullWidth
+                    onClick={handleSubmit}
+                    sx={{
+                        height: 48,
+                        borderRadius: '5px',
+                        textTransform: 'none',
+                        fontWeight: 600,
+                    }}
+                >
+                    Login
+                </Button>
+
+                <Box sx={{ display: 'flex', justifyContent: 'center', mt: 2 }}>
+                    <Typography sx={{ color: '#878787' }}>
+                        Don't have an Account?
+                    </Typography>
+
+                    <Link
+                        to="/register"
+                        style={{
+                            color: '#00C495',
+                            fontWeight: 800,
+                            marginLeft: '6px',
+                            textDecoration: 'none',
+                        }}
+                    >
+                        Register
+                    </Link>
                 </Box>
             </Box>
 
@@ -261,7 +206,6 @@ export default function Login() {
                 sx={{
                     display: { xs: 'none', md: 'block' },
                     width: '25%',
-                    height: '25%',
                 }}
             />
         </Box>

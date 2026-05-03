@@ -41,7 +41,7 @@ export function mapError(err: unknown) {
     });
   }
 
-  return new GraphQLError("Internal server error", {
+  return new GraphQLError("Something went wrong !, please try later", {
     extensions: { code: "INTERNAL_SERVER_ERROR" },
   });
 }

@@ -1,5 +1,5 @@
 import React, { Component, type ReactNode } from 'react';
-import { Box, Typography, Button } from '@mui/material';
+import { Box, Button } from '@mui/material';
 
 type Props = {
     children: ReactNode;
@@ -37,9 +37,18 @@ export default class ErrorBoundary extends Component<Props, State> {
                         flexDirection: 'column',
                         alignItems: 'center',
                         justifyContent: 'center',
+                        gap: 10,
                     }}
                 >
-                    <Typography variant="h5">Something went wrong</Typography>
+                    <Box
+                        component="img"
+                        src="src/assets/404_image.jpeg"
+                        alt="404 Page not found"
+                        sx={{
+                            display: { xs: 'none', md: 'block' },
+                            width: '25%',
+                        }}
+                    />
 
                     <Button
                         variant="contained"

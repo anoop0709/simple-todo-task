@@ -44,6 +44,7 @@ export const validateInput = ({
   } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(cleanEmail)) {
     errors.email = "Enter a valid email";
   }
+
   if (name !== undefined) {
     if (!cleanName) {
       errors.name = "Name is required";
@@ -68,7 +69,7 @@ export const validateInput = ({
 
   if (confirmPassword !== undefined) {
     if (!cleanConfirmPassword) {
-      errors.confirmPassword = "Confirm your password";
+      errors.confirmPassword = "Confirm password is required";
     } else if (cleanPassword !== cleanConfirmPassword) {
       errors.confirmPassword = "Passwords do not match";
     }
