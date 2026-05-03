@@ -35,13 +35,19 @@ export async function createContext({ req, res }: { req: Request; res: Response 
       user,
       login: (args: { id: string }) => {
         const token = jwt.sign({ id: args.id }, process.env.JWT_SECRET!);
-        res.cookie("token", token, { sameSite: "lax", httpOnly: true, expires: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000) });
+        res.cookie("token", token, {
+          httpOnly: true,
+          secure: true,
+          sameSite: "none",
+          expires: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000)
+        });
       },
       logout: () => {
         res.clearCookie("token", {
-          sameSite: "lax",
           httpOnly: true,
-          path: "/",
+          secure: true,
+          sameSite: "none",
+          path: "/", 
         });
       }
     }
