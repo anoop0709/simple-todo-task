@@ -9,7 +9,7 @@ import {
     Typography,
 } from '@mui/material';
 import { Visibility, VisibilityOff } from '@mui/icons-material';
-
+import TO_DO_IMAGE from '../assets/todo_list.png'
 import { useAuth } from '../hooks/useAuth';
 import { useSnackbar } from '../hooks/useSnackbar';
 import { handleError } from '../services/errorHandler';
@@ -209,7 +209,7 @@ export default function Register() {
 
             <Box
                 component="img"
-                src="src/assets/todo_list.png"
+                src={TO_DO_IMAGE}
                 alt="register"
                 sx={{
                     display: { xs: 'none', md: 'block' },

@@ -1,5 +1,6 @@
 import React, { Component, type ReactNode } from 'react';
 import { Box, Button } from '@mui/material';
+import NOT_FOUND_IMAGE from '../../assets/404_image.jpeg'
 
 type Props = {
     children: ReactNode;
@@ -42,7 +43,7 @@ export default class ErrorBoundary extends Component<Props, State> {
                 >
                     <Box
                         component="img"
-                        src="src/assets/404_image.jpeg"
+                        src={NOT_FOUND_IMAGE}
                         alt="404 Page not found"
                         sx={{
                             display: { xs: 'none', md: 'block' },

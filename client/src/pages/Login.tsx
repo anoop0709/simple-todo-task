@@ -11,7 +11,7 @@ import {
 } from '@mui/material';
 import { Visibility, VisibilityOff } from '@mui/icons-material';
 import { Link } from 'react-router-dom';
-
+import TO_DO_IMAGE from '../assets/todo_list.png'
 import { validateInput } from '../utils/helper';
 import { useSnackbar } from '../hooks/useSnackbar';
 import { handleError } from '../services/errorHandler';
@@ -201,7 +201,7 @@ export default function Login() {
 
             <Box
                 component="img"
-                src="src/assets/todo_list.png"
+                src={TO_DO_IMAGE}
                 alt="login"
                 sx={{
                     display: { xs: 'none', md: 'block' },
