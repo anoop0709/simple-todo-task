@@ -60,7 +60,8 @@ cd server
 npm install
 ```
 
-Create `.env` file:
+Create `.env` file: 
+“For security reasons, credentials are not included. Please add your MongoDB connection string in .env.”
 
 ```env
 PORT=4000
