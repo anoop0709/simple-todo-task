@@ -26,7 +26,8 @@ async function startServer() {
       '/graphql',
       cors<cors.CorsRequest>({
         origin: [
-          'http://localhost:5173'
+          'http://localhost:5173',
+          "https://simple-todo-task-e0df.onrender.com"
         ],
         credentials: true,
       }),
