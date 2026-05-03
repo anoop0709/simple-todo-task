@@ -11,18 +11,14 @@ import {
 import { Segment } from '@mui/icons-material';
 import React, { useState } from 'react';
 import { useAuth } from '../../hooks/useAuth';
-import { useApolloClient } from '@apollo/client/react';
-import { useNavigate } from 'react-router-dom';
 
 export default function Header() {
-    const { user, logout } = useAuth();
+    const { user, handleLogout } = useAuth();
     const isLoggedIn = !!user;
     const theme = useTheme();
     const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
     const isTab = useMediaQuery(theme.breakpoints.down('md'));
     const isShowMenuBar = isMobile || isTab;
-    const client = useApolloClient();
-    const navigate = useNavigate();
     const [anchorElement, setAnchorElement] = useState<null | HTMLElement>(
         null,
     );
@@ -34,16 +30,6 @@ export default function Header() {
 
     const handleClose = () => {
         setAnchorElement(null);
-    };
-
-    const handleLogout = async (
-        e: React.MouseEvent<HTMLLIElement, MouseEvent>,
-    ) => {
-        handleClose();
-        e.preventDefault();
-        await logout();
-        await client.resetStore();
-        navigate('/login');
     };
 
     return (

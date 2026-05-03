@@ -6,16 +6,14 @@ import {
     Button,
 } from '@mui/material';
 import { Search, LockOutlined } from '@mui/icons-material';
-import { useNavigate } from 'react-router-dom';
-import { useApolloClient } from '@apollo/client/react';
 import React, { useState } from 'react';
 import { type Task } from '../../types';
 import { useTasks } from '../../hooks/useTask';
 import { GET_ME_WITH_TASKS } from '../../graphql/queries';
 import TaskModal from '../modals/TaskActionModal';
-import { useSnackbar } from '../../hooks/useSnackbar';
 import { handleError } from '../../services/errorHandler';
 import { useAuth } from '../../hooks/useAuth';
+import { useSnackbar } from '../../hooks/useSnackbar';
 
 export default function TaskHeader({
     search,
@@ -25,11 +23,9 @@ export default function TaskHeader({
     setSearch: (e: string) => void;
 }) {
     const { createTask } = useTasks();
-    const { logout } = useAuth();
-    const navigate = useNavigate();
+    const { handleLogout } = useAuth();
     const { showSnackbar } = useSnackbar();
     const [openTaskModal, setOpenTaskModal] = useState(false);
-    const client = useApolloClient();
 
     const taskInput = {
         id: '',
@@ -38,27 +34,6 @@ export default function TaskHeader({
         tag: undefined,
         note: null,
         completed: false,
-    };
-
-    const handleLogout = async (
-        e: React.MouseEvent<HTMLButtonElement, MouseEvent>,
-    ) => {
-        try {
-            e.preventDefault();
-            await logout();
-            showSnackbar('User logout successfull', 'success');
-            await client.resetStore();
-            navigate('/login');
-        } catch (error) {
-            if (
-                error instanceof Error &&
-                error.message.toLowerCase().includes('abort')
-            ) {
-                return;
-            }
-            const message = handleError(error);
-            showSnackbar(message, 'error');
-        }
     };
 
     const handleAddTask = async (task: Task) => {
