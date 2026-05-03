@@ -1,6 +1,9 @@
 import jwt from "jsonwebtoken";
 import { Request, Response } from "express";
 import { Models, models } from "./model";
+import dotenv from 'dotenv';
+
+dotenv.config();
 
 interface JwtPayload {
   id: string;
@@ -25,6 +28,7 @@ const parseToken = (token: string): JwtPayload | null => {
 export async function createContext({ req, res }: { req: Request; res: Response }): Promise<Context> {
   const token = req.cookies.token;
   const parsed = token ? parseToken(token) : null;
+  const isProd = process.env.NODE_ENV === "production";
 
   const user = parsed
     ? { id: parsed.id }
@@ -35,19 +39,20 @@ export async function createContext({ req, res }: { req: Request; res: Response 
       user,
       login: (args: { id: string }) => {
         const token = jwt.sign({ id: args.id }, process.env.JWT_SECRET!);
+
         res.cookie("token", token, {
           httpOnly: true,
-          secure: true,
-          sameSite: "none",
-          expires: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000)
+          secure: isProd,
+          sameSite: isProd ? "none" : "lax",
+          path: "/",
         });
       },
       logout: () => {
         res.clearCookie("token", {
           httpOnly: true,
-          secure: true,
-          sameSite: "none",
-          path: "/", 
+          secure: isProd,
+          sameSite: isProd ? "none" : "lax",
+          path: "/",
         });
       }
     }
