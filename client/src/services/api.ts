@@ -27,7 +27,7 @@ const errorLink = new ErrorLink(({ error }) => {
 });
 
 const httpLink = new HttpLink({
-  uri: "http://localhost:4000/graphql",
+  uri: import.meta.env.VITE_API_URL,
   credentials: "include",
 });
 
