@@ -7,16 +7,19 @@ type cityNamesInTaskMap = Record<string, string>;
 export const resolvers = {
   Query: {
     me: async (_parent: unknown, _args: unknown, context: Context) => {
-      const userId = ensureAuthenticated(context);
-      const user = await context.models.User.findById(userId);
-      if (!user) {
+      try {
+        const userId = ensureAuthenticated(context);
+        const user = await context.models.User.findById(userId);
+        if (!user) {
+          return null;
+        }
+        const { id, email, name } = user
+        return { id, email, userName: name };
+      } catch {
         return null;
       }
-      const { id, email, name } = user
-      return { id, email, userName: name };
     },
   },
-
   User: {
     tasks: async (parent: { id: string }, _: unknown, context: Context) => {
       const userId = parent.id;

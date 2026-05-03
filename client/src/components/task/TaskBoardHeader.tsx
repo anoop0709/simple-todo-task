@@ -50,6 +50,12 @@ export default function TaskHeader({
             await client.resetStore();
             navigate('/login');
         } catch (error) {
+            if (
+                error instanceof Error &&
+                error.message.toLowerCase().includes('abort')
+            ) {
+                return;
+            }
             const message = handleError(error);
             showSnackbar(message, 'error');
         }
