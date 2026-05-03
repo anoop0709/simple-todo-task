@@ -8,6 +8,18 @@ import {
 import { showGlobalSnackbar } from "./snackBarService";
 
 const errorLink = new ErrorLink(({ error }) => {
+
+  if (
+    error instanceof Error &&
+    (error.message.includes("aborted") ||
+      error.message.includes("canceled") ||
+      error.message.includes("AbortError"))
+  ) {
+    return;
+  }
+  if (!CombinedGraphQLErrors.is(error) && error instanceof Error) {
+    if (error.message.toLowerCase().includes("abort")) return;
+  }
   if (CombinedGraphQLErrors.is(error)) {
     error.errors.forEach(({ message }) => {
       showGlobalSnackbar(message, "error");
@@ -20,7 +32,7 @@ const errorLink = new ErrorLink(({ error }) => {
   }
   else {
     showGlobalSnackbar(
-      "Server unreachable. Please try again.",
+      "Something gone wrong. Please try again.",
       "error"
     );
   }
