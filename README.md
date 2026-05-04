@@ -132,7 +132,8 @@ This application uses cookie-based authentication with a separate frontend and b
 On some mobile browsers (especially iOS Safari and Chrome mobile), third-party cookies may be blocked by default. This can prevent the authentication cookie from being stored, causing login to appear successful but not persist.
 
 Why this happens
-Frontend and backend are hosted on different domains
-Mobile browsers enforce stricter privacy policies for cross-site cookies
-Workarounds
-Test on desktop browsers where cookies are allowed
+* Frontend and backend are hosted on different domains
+* Mobile browsers enforce stricter privacy policies for cross-site cookies
+
+Alternative
+* Test on desktop browsers where cookies are allowed
