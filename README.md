@@ -27,6 +27,7 @@ A full-stack Todo application built with **React + TypeScript** (frontend) and *
 * TypeScript
 * Apollo Client
 * Vite
+* Material UI
 
 ### Backend
 
@@ -68,6 +69,7 @@ PORT=4000
 MONGO_URI=your_mongodb_uri
 JWT_SECRET=your_secret
 WEATHER_API_URL=your_lambda_endpoint
+NODE_ENV=dev
 ```
 
 Run server:
@@ -101,6 +103,7 @@ npm run dev
 
 ```env
 WEATHER_API_KEY=your_api_key
+WEATHER_API_BASE_URL=url_for_weather_api
 ```
 
 ---
@@ -122,3 +125,14 @@ WEATHER_API_KEY=your_api_key
 * Used input types in mutations for scalability
 
 ---
+Mobile Authentication Note
+
+This application uses cookie-based authentication with a separate frontend and backend domain.
+
+On some mobile browsers (especially iOS Safari and Chrome mobile), third-party cookies may be blocked by default. This can prevent the authentication cookie from being stored, causing login to appear successful but not persist.
+
+Why this happens
+Frontend and backend are hosted on different domains
+Mobile browsers enforce stricter privacy policies for cross-site cookies
+Workarounds
+Test on desktop browsers where cookies are allowed
