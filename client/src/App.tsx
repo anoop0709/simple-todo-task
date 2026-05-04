@@ -1,9 +1,9 @@
 import './App.css';
 import { Box, CircularProgress } from '@mui/material';
 import { useAuth } from './hooks/useAuth';
-import Login from './pages/Login';
+import { Login } from './pages/Login';
 import { Navigate, Route, Routes } from 'react-router-dom';
-import Register from './pages/Register';
+import { Register } from './pages/Register';
 import Taskboard from './pages/Taskboard';
 import Header from './components/elements/Appbar';
 import React from 'react';

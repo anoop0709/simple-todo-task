@@ -5,8 +5,14 @@ import type { GetMeWithTasks } from "../types";
 import { handleError } from "../services/errorHandler";
 import { useSnackbar } from "./useSnackbar";
 import { useNavigate } from "react-router-dom";
+import { validateInput } from "../utils/helper";
 
-
+type AuthFormValues = {
+  email: string;
+  password: string;
+  name?: string;
+  confirmPassword?: string;
+};
 export function useAuth() {
   const [register] = useMutation(REGISTER);
   const [login] = useMutation(LOGIN);
@@ -17,6 +23,51 @@ export function useAuth() {
   const navigate = useNavigate();
   const { showSnackbar } = useSnackbar();
   const client = useApolloClient();
+
+  const handleRegister = async (values: AuthFormValues) => {
+    try {
+      const { cleanEmail, cleanPassword, cleanName } =
+        validateInput(values);
+
+      await register({
+        variables: {
+          input: {
+            email: cleanEmail,
+            password: cleanPassword,
+            userName: cleanName,
+          },
+        },
+      });
+
+      showSnackbar('User registered successfully');
+      await refetch();
+      navigate('/');
+    } catch (error) {
+      const message = handleError(error);
+      showSnackbar(message, 'error');
+    }
+  }
+
+  const handleLogin = async (values: AuthFormValues) => {
+    try {
+      const { cleanEmail, cleanPassword } = validateInput(values);
+
+      await login({
+        variables: {
+          input: {
+            email: cleanEmail,
+            password: cleanPassword,
+          },
+        },
+      });
+
+      showSnackbar('User login successful', 'success');
+      await refetch();
+    } catch (error) {
+      const message = handleError(error);
+      showSnackbar(message, 'error');
+    }
+  }
 
   const handleLogout = async (
     e: React.MouseEvent<HTMLButtonElement, MouseEvent> | React.MouseEvent<HTMLLIElement, MouseEvent>,
@@ -42,9 +93,9 @@ export function useAuth() {
   return {
     user: data?.me ?? null,
     loading,
-    register,
-    login,
     refetch,
-    handleLogout
+    handleLogout,
+    handleLogin,
+    handleRegister
   };
 }
