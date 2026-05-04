@@ -84,7 +84,7 @@ export default function InputForm({
                     <Typography>Enter your email</Typography>
                     <TextField
                         fullWidth
-                        placeholder="Email"
+                        placeholder="yours@example.com"
                         {...getTextFieldProps('email')}
                     />
                 </Box>
@@ -94,7 +94,7 @@ export default function InputForm({
                         <Typography>Enter your user name</Typography>
                         <TextField
                             fullWidth
-                            placeholder="User name"
+                            placeholder="task master"
                             {...getTextFieldProps('name')}
                         />
                     </Box>
