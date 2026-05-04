@@ -125,7 +125,7 @@ WEATHER_API_BASE_URL=url_for_weather_api
 * Used input types in mutations for scalability
 
 ---
-Mobile Authentication Note
+## Mobile Authentication Note
 
 This application uses cookie-based authentication with a separate frontend and backend domain.
 
