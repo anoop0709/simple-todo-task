@@ -9,10 +9,11 @@ import {
 } from '@mui/material';
 import { ExpandMoreOutlined as ExpandMoreIcon } from '@mui/icons-material';
 
-import TaskRow from '../task/TaskRow';
-import TaskRowHeader from '../task/TaskRowHeader';
-import { type Task } from '../../types';
+import TaskRow from '../task-row/TaskRow';
+import TaskRowHeader from '../task-row-header/TaskRowHeader';
+import { type Task } from '../../../types';
 import React, { useCallback, useState } from 'react';
+import { styles } from './Tasks.styles';
 
 type TasksProps = {
     tasks: Task[];
@@ -42,6 +43,7 @@ export const Tasks = ({
     const handleDrop = useCallback(
         (dropIndex: number) => {
             if (draggedIndex === null) return;
+
             reorderTasks(draggedIndex, dropIndex, isTodo);
             setDraggedIndex(null);
         },
@@ -55,19 +57,11 @@ export const Tasks = ({
     if (!tasks.length) return null;
 
     return (
-        <React.Fragment>
-            <Box
-                sx={{
-                    width: '96%',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'flex-start',
-                    margin: '50px auto 20px',
-                }}
-            >
+        <>
+            <Box sx={styles.headerContainer}>
                 <Typography
                     variant="h6"
-                    sx={{ fontWeight: 600 }}
+                    sx={styles.title}
                 >
                     {isTodo ? 'Task to do' : 'Tasks done'}
                 </Typography>
@@ -75,9 +69,7 @@ export const Tasks = ({
                 <ExpandMoreIcon
                     onClick={handleToggle}
                     sx={{
-                        cursor: 'pointer',
-                        ml: 1,
-                        transition: 'transform 0.3s ease',
+                        ...styles.expandIcon,
                         transform: expandTasks
                             ? 'rotate(0deg)'
                             : 'rotate(180deg)',
@@ -88,11 +80,7 @@ export const Tasks = ({
             {expandTasks && (
                 <TableContainer
                     component={Paper}
-                    sx={{
-                        width: '96%',
-                        margin: '0 auto',
-                        boxShadow: '0.1px 0.1px 0.1px 1px #e8e8e8',
-                    }}
+                    sx={styles.tableContainer}
                 >
                     <Table>
                         <TableHead>
@@ -100,21 +88,19 @@ export const Tasks = ({
                         </TableHead>
 
                         <TableBody>
-                            {tasks.length > 0
-                                ? tasks.map((task, index) => (
-                                      <TaskRow
-                                          key={task.id}
-                                          task={task}
-                                          index={index}
-                                          setDraggedIndex={onDragStart}
-                                          handleDrop={handleDrop}
-                                      />
-                                  ))
-                                : null}
+                            {tasks.map((task, index) => (
+                                <TaskRow
+                                    key={task.id}
+                                    task={task}
+                                    index={index}
+                                    setDraggedIndex={onDragStart}
+                                    handleDrop={handleDrop}
+                                />
+                            ))}
                         </TableBody>
                     </Table>
                 </TableContainer>
             )}
-        </React.Fragment>
+        </>
     );
 };

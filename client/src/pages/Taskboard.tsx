@@ -1,10 +1,10 @@
 import { Box, Typography } from '@mui/material';
-import TaskHeader from '../components/task/TaskBoardHeader';
+import TaskHeader from '../components/task/task-board-header/TaskBoardHeader';
 import { useTasks } from '../hooks/useTask';
 import React, { useMemo, useState } from 'react';
 import { useTheme, useMediaQuery } from '@mui/material';
-import { Tasks } from '../components/task/Tasks';
-import { TasksMobileVersion } from '../components/task/TasksMobileVersion';
+import { Tasks } from '../components/task/tasks/Tasks';
+import { TasksMobileVersion } from '../components/task/tasks-mobile-version/TasksMobileVersion';
 
 export default function Taskboard() {
     const theme = useTheme();

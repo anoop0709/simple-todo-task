@@ -9,10 +9,11 @@ import {
     Typography,
 } from '@mui/material';
 import { Visibility, VisibilityOff } from '@mui/icons-material';
-import TO_DO_IMAGE from '../../assets/todo_list.png';
-import { useAuth } from '../../hooks/useAuth';
-import { validateInput } from '../../utils/helper';
-import { useForm } from '../../hooks/useForm';
+import TO_DO_IMAGE from '../../../assets/todo_list.png';
+import { useAuth } from '../../../hooks/useAuth';
+import { validateInput } from '../../../utils/helper';
+import { useForm } from '../../../hooks/useForm';
+import { styles } from './InputForm.styles';
 
 type AuthFormValues = {
     email: string;
@@ -20,17 +21,20 @@ type AuthFormValues = {
     name?: string;
     confirmPassword?: string;
 };
-export default function InputForm({
-    initialValues,
-    formFor,
-}: {
+
+type Props = {
     initialValues: AuthFormValues;
-    formFor: string;
-}) {
+    formFor: 'login' | 'register';
+};
+
+export default function InputForm({ initialValues, formFor }: Props) {
     const { handleLogin, handleRegister } = useAuth();
+
     const [showPassword, setShowPassword] = useState(false);
     const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+
     const isLoginForm = formFor === 'login';
+
     const fn: (values: AuthFormValues) => Promise<void> = isLoginForm
         ? handleLogin
         : handleRegister;
@@ -42,45 +46,25 @@ export default function InputForm({
     });
 
     return (
-        <Box
-            sx={{
-                height: '100%',
-                display: 'flex',
-                flexDirection: { xs: 'column', md: 'row' },
-                alignItems: 'center',
-                justifyContent: 'space-around',
-                backgroundColor: '#ffffff',
-                px: 2,
-                marginTop: 10,
-            }}
-        >
-            <Box
-                sx={{
-                    width: { xs: '100%', sm: '420px', md: '500px' },
-                    padding: { xs: '24px', md: '40px' },
-                    borderRadius: '8px',
-                    border: { xs: 'none', md: '0.2px solid #878787' },
-                }}
-            >
+        <Box sx={styles.container}>
+            <Box sx={styles.card}>
                 <Typography
                     variant="h5"
-                    sx={{ fontWeight: 900, mb: 2 }}
+                    sx={styles.titleSmall}
                 >
-                    Welcome !{' '}
+                    Welcome!
                 </Typography>
 
                 <Typography
                     variant="h4"
-                    sx={{ fontWeight: 900 }}
+                    sx={styles.titleMain}
                 >
                     {isLoginForm ? 'Sign in to' : 'Sign up to'}
                 </Typography>
 
-                <Typography sx={{ mb: 3, fontWeight: 600 }}>
-                    get things done ✨
-                </Typography>
+                <Typography sx={styles.subtitle}>get things done ✨</Typography>
 
-                <Box sx={{ mb: 2 }}>
+                <Box sx={styles.inputGroup}>
                     <Typography>Enter your email</Typography>
                     <TextField
                         fullWidth
@@ -90,7 +74,7 @@ export default function InputForm({
                 </Box>
 
                 {!isLoginForm && (
-                    <Box sx={{ mb: 2 }}>
+                    <Box sx={styles.inputGroup}>
                         <Typography>Enter your user name</Typography>
                         <TextField
                             fullWidth
@@ -100,7 +84,7 @@ export default function InputForm({
                     </Box>
                 )}
 
-                <Box sx={{ mb: 2 }}>
+                <Box sx={styles.inputGroup}>
                     <Typography>Enter your password</Typography>
                     <TextField
                         fullWidth
@@ -130,7 +114,7 @@ export default function InputForm({
                 </Box>
 
                 {!isLoginForm && (
-                    <Box sx={{ mb: 2 }}>
+                    <Box sx={styles.inputGroup}>
                         <Typography>Confirm your password</Typography>
                         <TextField
                             fullWidth
@@ -161,23 +145,18 @@ export default function InputForm({
                         />
                     </Box>
                 )}
+
                 <Button
                     variant="contained"
                     fullWidth
                     onClick={handleSubmit}
-                    sx={{
-                        height: 48,
-                        borderRadius: '5px',
-                        textTransform: 'none',
-                        fontWeight: 600,
-                        color: '#ffff',
-                    }}
+                    sx={styles.button}
                 >
                     {isLoginForm ? 'Login' : 'Register'}
                 </Button>
 
-                <Box sx={{ display: 'flex', justifyContent: 'center', mt: 2 }}>
-                    <Typography sx={{ color: '#878787' }}>
+                <Box sx={styles.footer}>
+                    <Typography sx={styles.footerText}>
                         {isLoginForm
                             ? `Don't have an Account?`
                             : 'Already have an account?'}
@@ -185,12 +164,7 @@ export default function InputForm({
 
                     <Link
                         to={isLoginForm ? '/register' : '/login'}
-                        style={{
-                            color: '#00C495',
-                            fontWeight: 800,
-                            marginLeft: '6px',
-                            textDecoration: 'none',
-                        }}
+                        style={styles.link as React.CSSProperties}
                     >
                         {isLoginForm ? 'Register' : 'Login'}
                     </Link>
@@ -201,10 +175,7 @@ export default function InputForm({
                 component="img"
                 src={TO_DO_IMAGE}
                 alt="register"
-                sx={{
-                    display: { xs: 'none', md: 'block' },
-                    width: '25%',
-                }}
+                sx={styles.image}
             />
         </Box>
     );

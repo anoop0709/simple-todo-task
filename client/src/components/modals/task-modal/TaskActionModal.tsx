@@ -7,32 +7,29 @@ import {
     MenuItem,
 } from '@mui/material';
 import { useState } from 'react';
-import { Tag, type Task } from '../../types';
+import { Tag, type Task } from '../../../types';
 import {
     normalizeDateToSendToBackend,
     formatDueDateInEdit,
-} from '../../utils/helper';
-import { style } from './ModalStyle';
+} from '../../../utils/helper';
+import { styles } from './TaskActionModal.styles';
 
-export default function TaskModal({
-    open,
-    onClose,
-    onAction,
-    task,
-}: {
+type Props = {
     open: boolean;
     onClose: () => void;
     onAction: (task: Task) => void;
     task: Task;
-}) {
+};
+
+export default function TaskModal({ open, onClose, onAction, task }: Props) {
     const [name, setName] = useState(task.name);
     const [dueDate, setDueDate] = useState(formatDueDateInEdit(task.dueDate));
     const [tag, setTag] = useState<Tag | '' | undefined>(task?.tag);
-    const [note, setNote] = useState(null);
+    const [note, setNote] = useState<string | null>(task?.note ?? null);
     const [isError, setIsError] = useState(false);
 
     const handleSubmit = () => {
-        if (!name.trim() && name.length < 3) {
+        if (!name.trim() || name.length < 3) {
             setIsError(true);
             return;
         }
@@ -42,33 +39,41 @@ export default function TaskModal({
             name,
             dueDate: normalizeDateToSendToBackend(dueDate) || undefined,
             tag: tag || undefined,
-            note: note || null,
+            note,
             completed: task.completed,
         };
-        onAction(newTask);
 
+        onAction(newTask);
         setName('');
         setDueDate('');
         setTag('');
         setNote(null);
+        setIsError(false);
 
         onClose();
     };
+
     return (
         <Modal
             open={open}
             onClose={onClose}
         >
-            <Box sx={style}>
-                <Typography sx={{ variant: 'h6', mb: 2 }}>
-                    Add New Task
+            <Box sx={styles.modalBox}>
+                <Typography
+                    variant="h6"
+                    sx={styles.title}
+                >
+                    {task.name ? 'Update Task' : 'Add New Task'}
                 </Typography>
 
                 <TextField
                     fullWidth
                     label="Task name"
                     value={name}
-                    onChange={(e) => setName(e.target.value)}
+                    onChange={(e) => {
+                        setName(e.target.value);
+                        setIsError(false);
+                    }}
                     margin="normal"
                     required
                     error={isError}
@@ -110,26 +115,20 @@ export default function TaskModal({
                     ))}
                 </TextField>
 
-                <Box
-                    sx={{
-                        mt: 3,
-                        display: 'flex',
-                        justifyContent: 'flex-end',
-                        gap: 1,
-                    }}
-                >
+                <Box sx={styles.actions}>
                     <Button
                         onClick={onClose}
-                        sx={{ color: '#878787' }}
+                        sx={styles.cancelButton}
                     >
                         Cancel
                     </Button>
+
                     <Button
                         variant="contained"
-                        sx={{ color: '#efefef' }}
                         onClick={handleSubmit}
+                        sx={styles.submitButton}
                     >
-                        {task.name !== '' ? 'Update Task' : 'Add Task'}
+                        {task.name ? 'Update Task' : 'Add Task'}
                     </Button>
                 </Box>
             </Box>

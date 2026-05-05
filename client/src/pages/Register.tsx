@@ -1,4 +1,4 @@
-import InputForm from '../components/elements/InputForm';
+import InputForm from '../components/elements/input-form/InputForm';
 
 export const Register = () => {
     const initialValues = {

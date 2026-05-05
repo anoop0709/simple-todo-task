@@ -1,5 +1,5 @@
 import { useState, type ReactNode } from 'react';
-import AppSnackbar from '../components/elements/SnackBar';
+import AppSnackbar from '../components/elements/snackbar/SnackBar';
 import { SnackbarContext, type Severity } from './SnackBarContext';
 
 export function SnackbarProvider({ children }: { children: ReactNode }) {

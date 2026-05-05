@@ -1,55 +1,62 @@
 import { Modal, Box, Typography, Button } from '@mui/material';
-import { style } from './ModalStyle';
+import { styles } from './ConfirmationModal.styles';
+
+type Props = {
+    open: boolean;
+    onClose: () => void;
+    onDelete: (id: string | undefined) => void;
+    id: string | undefined;
+};
 
 export default function ConfirmDeleteTaskModal({
     open,
     onClose,
     onDelete,
     id,
-}: {
-    open: boolean;
-    onClose: () => void;
-    onDelete: (id: string | undefined) => void;
-    id: string | undefined;
-}) {
+}: Props) {
     const handleSubmit = () => {
-        if (id === undefined) {
+        if (!id) {
             onClose();
+            return;
         }
+
         onDelete(id);
         onClose();
     };
+
     return (
         <Modal
             open={open}
             onClose={onClose}
         >
-            <Box sx={style}>
-                <Typography sx={{ variant: 'h5', mb: 2, fontWeight: 600 }}>
+            <Box sx={styles.modalBox}>
+                <Typography
+                    variant="h6"
+                    sx={styles.title}
+                >
                     Confirm deletion
                 </Typography>
-                <Typography sx={{ variant: 'body2', mt: 2, mb: 3 }}>
-                    Are you sure do you want to delete this task, this action
-                    cannot be undone
-                </Typography>
-                <Box
-                    sx={{
-                        mt: 3,
-                        display: 'flex',
-                        justifyContent: 'flex-end',
-                        gap: 1,
-                    }}
+
+                <Typography
+                    variant="body2"
+                    sx={styles.message}
                 >
+                    Are you sure you want to delete this task? This action
+                    cannot be undone.
+                </Typography>
+
+                <Box sx={styles.actions}>
                     <Button
                         onClick={onClose}
-                        sx={{ color: '#878787' }}
+                        sx={styles.cancelButton}
                     >
                         Cancel
                     </Button>
+
                     <Button
                         variant="contained"
-                        sx={{ color: '#efefef' }}
                         onClick={handleSubmit}
+                        sx={styles.deleteButton}
                     >
                         Delete Task
                     </Button>

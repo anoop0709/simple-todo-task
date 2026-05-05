@@ -10,15 +10,18 @@ import {
 } from '@mui/material';
 import { Segment } from '@mui/icons-material';
 import React, { useState } from 'react';
-import { useAuth } from '../../hooks/useAuth';
+import { useAuth } from '../../../hooks/useAuth';
+import { styles } from './Appbar.styles';
 
 export default function Header() {
     const { user, handleLogout } = useAuth();
     const isLoggedIn = !!user;
+
     const theme = useTheme();
     const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
     const isTab = useMediaQuery(theme.breakpoints.down('md'));
     const isShowMenuBar = isMobile || isTab;
+
     const [anchorElement, setAnchorElement] = useState<null | HTMLElement>(
         null,
     );
@@ -37,19 +40,14 @@ export default function Header() {
             position="static"
             elevation={0}
             sx={{
-                backgroundColor: isLoggedIn ? '#000' : '#ffffff',
+                backgroundColor: isLoggedIn ? '#000' : '#fff',
                 color: isLoggedIn ? '#fff' : '#000',
             }}
         >
-            <Toolbar
-                sx={{
-                    display: 'flex',
-                    justifyContent: 'space-between',
-                }}
-            >
+            <Toolbar sx={styles.toolbar}>
                 <Typography
                     sx={{
-                        fontWeight: 700,
+                        ...styles.title,
                         color: isLoggedIn ? '#fff' : '#000',
                     }}
                 >
@@ -57,7 +55,7 @@ export default function Header() {
                 </Typography>
 
                 {isLoggedIn && isShowMenuBar && (
-                    <React.Fragment>
+                    <>
                         <IconButton
                             color="inherit"
                             onClick={handleMenuOpen}
@@ -78,16 +76,16 @@ export default function Header() {
                                 vertical: 'top',
                                 horizontal: 'right',
                             }}
-                            sx={{ padding: '0px 30px !important' }}
+                            sx={styles.menu}
                         >
                             <MenuItem
                                 onClick={(e) => handleLogout(e)}
-                                sx={{ padding: '0px 30px !important' }}
+                                sx={styles.menuItem}
                             >
                                 Logout
                             </MenuItem>
                         </Menu>
-                    </React.Fragment>
+                    </>
                 )}
             </Toolbar>
         </AppBar>
