@@ -15,7 +15,7 @@ export const resolvers = {
             try {
                 const userId = ensureAuthenticated(context);
                 const task = await context.models.Task.create({
-                    name: sanitizeRequiredText(input.title),
+                    name: sanitizeRequiredText(input.name),
                     note: sanitizeText(input.note),
                     dueDate: parseToISOString(input?.dueDate),
                     tag: input.tag,
