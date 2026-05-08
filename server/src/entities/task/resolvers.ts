@@ -19,7 +19,6 @@ export const resolvers = {
                     note: sanitizeText(input.note),
                     dueDate: parseToISOString(input?.dueDate),
                     tag: input.tag,
-                    completed: input.completed,
                     userId: new mongoose.Types.ObjectId(userId),
                 });
                 return task;
