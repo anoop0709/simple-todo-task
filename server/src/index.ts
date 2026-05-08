@@ -7,6 +7,7 @@ import cookieParser from 'cookie-parser';
 import { createContext } from './context';
 import { connectDb } from './config/dbConfig';
 import schema from './schema';
+import helmet from 'helmet';
 
 dotenv.config();
 
@@ -16,12 +17,26 @@ const app = express();
 const server = new ApolloServer({
   schema,
 });
+const isProd = process.env.NODE_ENV === 'production';
+import rateLimit from 'express-rate-limit';
+
+const limiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 100,
+});
 
 async function startServer() {
   try {
     await connectDb();
     await server.start();
 
+    app.use(
+      helmet({
+        contentSecurityPolicy: isProd,
+        crossOriginResourcePolicy: false,
+      })
+    );
+    app.use(limiter);
     app.use(
       '/graphql',
       cors<cors.CorsRequest>({

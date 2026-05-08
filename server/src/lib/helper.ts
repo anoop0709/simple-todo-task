@@ -1,6 +1,7 @@
 import { Context } from "../context";
 import { AuthError } from "./error";
 import nlp from "compromise";
+import validator from 'validator';
 
 export function ensureAuthenticated(context: Context) {
   if (!context.auth.user) {
@@ -30,3 +31,21 @@ export function detectCityWithNLP(text: string): string | undefined {
     throw error;
   }
 }
+
+export const sanitizeText = (
+  text?: string | undefined
+): string | undefined => {
+  if (!text?.trim()) return undefined;
+
+  return validator.escape(text.trim());
+};
+
+export const sanitizeRequiredText = (text: string): string => {
+  const cleaned = validator.escape(text.trim());
+
+  if (!cleaned) {
+    throw new Error("Field is required");
+  }
+
+  return cleaned;
+};

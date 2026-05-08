@@ -1,4 +1,4 @@
-export const Tag = {
+export const Tags = {
     URGENT: "URGENT",
     NOT_URGENT: "NOT_URGENT",
     HIGH: "HIGH",
@@ -6,7 +6,7 @@ export const Tag = {
     LOW: "LOW",
 } as const;
 
-export type Tag = (typeof Tag)[keyof typeof Tag];
+export type Tag = (typeof Tags)[keyof typeof Tags];
 
 export type Task = {
     id?: string;
@@ -23,3 +23,11 @@ export interface User {
     password: string;
     tasks:[Task]
 }
+
+export type UpdateTaskInput = {
+  name: string;
+  note?: string;
+  tag?: Tag;
+  completed: boolean;
+  dueDate?: string;
+};

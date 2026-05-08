@@ -29,6 +29,7 @@ export async function createContext({ req, res }: { req: Request; res: Response 
   const token = req.cookies.token;
   const parsed = token ? parseToken(token) : null;
   const isProd = process.env.NODE_ENV === "production";
+  const maxAge = 7 * 24 * 60 * 60 * 1000
 
   const user = parsed
     ? { id: parsed.id }
@@ -45,7 +46,8 @@ export async function createContext({ req, res }: { req: Request; res: Response 
           secure: isProd,
           sameSite: isProd ? "none" : "lax",
           path: "/",
-        });
+          maxAge
+        } );
       },
       logout: () => {
         res.clearCookie("token", {

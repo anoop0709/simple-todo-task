@@ -24,15 +24,15 @@ export const typeDefs = `#graphql
     dueDate: DateTime
     tag: Tag
     note: String
-    completed: Boolean
+    completed: Boolean!
   }
 
    input UpdateTaskInput {
-    name: String
+    name: String!
     dueDate: DateTime
     tag: Tag
     note: String
-    completed: Boolean
+    completed: Boolean!
   }
 
   type Mutation {
